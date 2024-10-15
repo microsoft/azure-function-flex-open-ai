@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "..",
+		},
+		{
+			"path": "../src/uploader",
+			"name": "Audio file uploader"
+		},
+		{
+			"path": "../src/processor",
+			"name": "Audio file processor"
+		}
+	],
+	"settings": {
+		"debug.internalConsoleOptions": "neverOpen",
+		"azurite.location": "/tmp",
+	}
+}

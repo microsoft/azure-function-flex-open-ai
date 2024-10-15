@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: hol-azure-functions-flex-openai
+
+services:
+  uploader:
+    project: ./src/uploader
+    language: dotnet
+    host: function
+  processor:
+    project: ./src/processor
+    language: dotnet
+    host: function
