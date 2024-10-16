@@ -290,8 +290,8 @@ module roles './modules/security/roles.bicep' = {
   scope: resourceGroup
   params: {
     cosmosDbAccountName: cosmosDb.outputs.name
-    funcStdId: functionStdFlex.outputs.id
-    funcDrblId: functionDrblFlex.outputs.id
+    funcStdPrincipalId: functionStdFlex.outputs.principalId
+    funcDrblPrincipalId: functionDrblFlex.outputs.principalId
   }
   dependsOn: [cosmosDb]
 }
