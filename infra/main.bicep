@@ -23,7 +23,12 @@ param application string = 'hol'
 param location string = 'swedencentral'
 
 @description('Optional. The tags to be assigned to the created resources.')
-param tags object = {}
+param tags object = {
+  Deployment: 'bicep'
+  Environment: environment
+  Location: location
+  Application: application
+}
 
 var resourceToken = toLower(uniqueString(subscription().id, environment, application))
 var resourceSuffix = [
