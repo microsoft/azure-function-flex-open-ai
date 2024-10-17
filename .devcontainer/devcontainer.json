@@ -36,7 +36,6 @@
         "ms-dotnettools.csharp",
         "ms-dotnettools.csdevkit",
         // Github
-        "GitHub.vscode-github-actions",
         "github.copilot",
         // azd + functions
         "ms-azuretools.azure-dev",
