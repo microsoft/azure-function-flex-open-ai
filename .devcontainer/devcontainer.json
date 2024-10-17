@@ -1,52 +1,49 @@
 {
-    "name": "Functions Dev Container",
-    "image": "mcr.microsoft.com/devcontainers/dotnet:8.0-jammy",
-  
-    "containerUser": "vscode",
-  
-    "features": {
-        //Az CLI install
-        "azure-cli": {
-          "version":"latest"
-        },
-  
-        //Terraform + tflint install
-        "ghcr.io/devcontainers/features/terraform:latest":{ 
-          "version":"latest",
-          "tflint":"latest"
-        },
-  
-        // //Azure Function Core tools + Visual Studio Extension install
-        "ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1":{},
-
-        // azd
-        "ghcr.io/azure/azure-dev/azd:latest": {}
+  "name": "Functions Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:8.0-jammy",
+  "containerUser": "vscode",
+  "features": {
+    //Az CLI install
+    "azure-cli": {
+      "version": "2.65"
     },
-  
-    // Ports Forward config : 
-    // 7071 : Azure Function Debug Port
-    // 1000[0,1,2] : Azurite storage emulator used with Azure Function
-    "forwardPorts": [7071, 10000, 10001, 10002],
-  
-    "customizations": {
-      "vscode": {
-        "extensions": [
-          // Azurite : Storage Account Emulator for local Azure Function Debug
-          "azurite.azurite",
-          // Azure Storage Account
-          "ms-azuretools.vscode-azurestorage",
-          // Language related extensions
-          "ms-dotnettools.csharp", 
-          "ms-dotnettools.csdevkit",
-          // Github
-          "GitHub.vscode-github-actions",
-          "github.copilot",
-          // azd + functions
-          "ms-azuretools.azure-dev",
-          "ms-azuretools.vscode-azurefunctions",
-          // Bicep
-          "ms-azuretools.vscode-bicep"
-        ]
-      }
+    // //Azure Function Core tools + Visual Studio Extension install
+    "ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {
+      "version": "4.0.6280"
+    },
+    // azd
+    "ghcr.io/azure/azure-dev/azd:latest": {
+      "version": "1.10.2"
+    }
+  },
+  // Ports Forward config : 
+  // 7071 : Azure Function Debug Port
+  // 1000[0,1,2] : Azurite storage emulator used with Azure Function
+  "forwardPorts": [
+    7071,
+    10000,
+    10001,
+    10002
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Azurite : Storage Account Emulator for local Azure Function Debug
+        "azurite.azurite",
+        // Azure Storage Account
+        "ms-azuretools.vscode-azurestorage",
+        // Language related extensions
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.csdevkit",
+        // Github
+        "GitHub.vscode-github-actions",
+        "github.copilot",
+        // azd + functions
+        "ms-azuretools.azure-dev",
+        "ms-azuretools.vscode-azurefunctions",
+        // Bicep
+        "ms-azuretools.vscode-bicep"
+      ]
     }
   }
+}
