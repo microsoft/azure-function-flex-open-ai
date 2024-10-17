@@ -221,7 +221,7 @@ module processorFunction './modules/host/function.bicep' = {
       }
       {
         name  : 'SPEECH_TO_TEXT_API_KEY'
-        value : '@Microsoft.KeyVault(SecretUri=https://%s.vault.azure.net/secrets/%s/)'
+        value : '@Microsoft.KeyVault(SecretUri=${speechToTextService.outputs.secretUri})'
       }
       {
         name  : 'COSMOS_DB_DATABASE_NAME'
@@ -247,32 +247,23 @@ module processorFunction './modules/host/function.bicep' = {
   }
 }
 
-var speechToTextServiceName = 'spch-${resourceSuffixKebabcase}'
-
-module speechToTextService './modules/ai/speech-to-text-service.bicep' = {
-  name: 'speechToTextService'
-  scope: resourceGroup
-  params: {
-    name: speechToTextServiceName
-    tags: tags
-  }
-}
-
-resource speechServiceDeployed 'Microsoft.CognitiveServices/accounts@2024-06-01-preview' existing = {
-  name: speechToTextServiceName
-  scope: resourceGroup
-}
-
 module keyVault './modules/security/key-vault.bicep' = {
   name: 'keyVault'
   scope: resourceGroup
   params: {
     name: take('kv-${resourceSuffixKebabcase}', 24)
-    funcDrblPrincipalId: processorFunction.outputs.principalId
-    speechToTextApiKey: speechServiceDeployed.listKeys().key1
     tags: tags
   }
-  dependsOn: [speechToTextService]
+}
+
+module speechToTextService './modules/ai/speech-to-text-service.bicep' = {
+  name: 'speechToTextService'
+  scope: resourceGroup
+  params: {
+    name: 'spch-${resourceSuffixKebabcase}'
+    tags: tags
+    keyVaultName: keyVault.outputs.name
+  }
 }
 
 module roles './modules/security/roles.bicep' = {
@@ -292,3 +283,9 @@ module roles './modules/security/roles.bicep' = {
 }
 
 output RESOURCE_GROUP string = resourceGroup.name
+output AZURE_PROCESSOR_FUNCTION_APP_NAME string = processorFunction.outputs.name
+output AUDIOS_STORAGE_ACCOUNT_CONTAINER_NAME string = storageAccountAudios.outputs.containers[0].name
+output AUDIOS_EVENTGRID_SYSTEM_TOPIC_NAME string = eventGrid.outputs.name
+
+
+// TODO: assign Storage Blob Data Contributor role to the audios storage account for the current user (for testing purposes)

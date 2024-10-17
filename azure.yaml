@@ -1,7 +1,18 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
 name: hol-azure-functions-flex-openai
-
+hooks:
+  postdeploy:
+    windows:
+      shell: pwsh
+      run: ./scripts/post-up.ps1
+      interactive: true
+      continueOnError: false
+    posix:
+      shell: sh
+      run: ./scripts/post-up.sh
+      interactive: true
+      continueOnError: false
 services:
   uploader:
     project: ./src/uploader
