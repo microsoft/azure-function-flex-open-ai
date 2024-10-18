@@ -846,7 +846,7 @@ You will see a new property in your Cosmos DB item called `completion` with a su
 
 ![Open AI Summary Result](assets/open-ai-summary-result.png)
 
-## Lab 2 : Summary
+## Lab 3 : Summary
 
 You saw how easy it is to integrate Azure OpenAI with Azure Function to enrich your items inside Cosmos DB. You have now a full scenario with your Azure Durable Function!
 

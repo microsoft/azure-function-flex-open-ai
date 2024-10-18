@@ -124,7 +124,7 @@ module storageAccountFunctions './modules/storage/storage-account.bicep' = {
   params: {
     location: location
     tags: tags
-    name: take('st${resourceSuffixLowercase}', 24)
+    name: take('stfunc${resourceSuffixLowercase}', 24)
     containers: [
       {name: uploaderDeploymentPackageContainerName}
       {name: processorDeploymentPackageContainerName}
