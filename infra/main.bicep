@@ -31,6 +31,17 @@ param tags object = {
   Application: application
 }
 
+@description('Id of the user or app to assign application roles')
+param principalId string = ''
+
+@description('Whether the deployment is running on GitHub Actions')
+param runningOnGh string = ''
+
+@description('Whether the deployment is running on Azure DevOps Pipeline')
+param runningOnAdo string = ''
+
+var principalType = empty(runningOnGh) && empty(runningOnAdo) ? 'User' : 'ServicePrincipal'
+
 var resourceToken = toLower(uniqueString(subscription().id, name, environment, application))
 var resourceSuffix = [
   toLower(environment)
@@ -156,7 +167,7 @@ module uploaderFunction './modules/host/function.bicep' = {
     appSettings: [
       {
         name  : 'AudioUploadStorage__serviceUri'
-        value : 'https://${storageAccountFunctions.outputs.name}.blob.core.windows.net'
+        value : 'https://${storageAccountAudios.outputs.name}.blob.core.windows.net'
       }
       {
         name  : 'STORAGE_ACCOUNT_CONTAINER'
@@ -273,6 +284,8 @@ module roles './modules/security/roles.bicep' = {
     cosmosDbAccountName: cosmosDb.outputs.name
     funcStdPrincipalId: uploaderFunction.outputs.principalId
     funcDrblPrincipalId: processorFunction.outputs.principalId
+    userPrincipalId: principalId
+    userPrincipalType: principalType
     appInsightsName: applicationInsights.outputs.name
     keyVaultName: keyVault.outputs.name
     storageAccountAudiosName: storageAccountAudios.outputs.name
@@ -286,6 +299,3 @@ output RESOURCE_GROUP string = resourceGroup.name
 output AZURE_PROCESSOR_FUNCTION_APP_NAME string = processorFunction.outputs.name
 output AUDIOS_STORAGE_ACCOUNT_CONTAINER_NAME string = storageAccountAudios.outputs.containers[0].name
 output AUDIOS_EVENTGRID_SYSTEM_TOPIC_NAME string = eventGrid.outputs.name
-
-
-// TODO: assign Storage Blob Data Contributor role to the audios storage account for the current user (for testing purposes)

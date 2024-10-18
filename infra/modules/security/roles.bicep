@@ -1,6 +1,8 @@
 param cosmosDbAccountName string
 param funcStdPrincipalId string
 param funcDrblPrincipalId string
+param userPrincipalId string
+param userPrincipalType string
 param storageAccountAudiosName string
 param storageFuncDrblName string
 param keyVaultName string
@@ -18,6 +20,9 @@ var storageAccountContributorRoleId = subscriptionResourceId('Microsoft.Authoriz
 
 // https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/storage#storage-table-data-contributor
 var storageTableDataContributorRoleId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3')
+
+// https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/storage#storage-blob-data-owner
+var storageBlobDataOwnerRoleId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b')
 
 // https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/security#key-vault-secrets-user
 var keyVaultSecretsUserRoleId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
@@ -74,7 +79,7 @@ resource cosmosDbDataContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleD
   }
 }
 
-resource funcStdCosmosDbContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-05-15' = {
+resource funcStdCosmosDbReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-05-15' = {
   parent: cosmosDbAccount
   name: '51f03358-a4a2-b520-f424-1f6b236c26ba'
   properties: {
@@ -105,6 +110,36 @@ resource storageAccountAudiosRoleAssignment 'Microsoft.Authorization/roleAssignm
     roleDefinitionId: storageQueueDataContributorRoleId
     principalId: funcDrblPrincipalId
     principalType: 'ServicePrincipal'
+  }
+}
+
+resource uploaderStorageAccountAudiosRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(storageAccountAudios.id, storageBlobDataOwnerRoleId, funcStdPrincipalId)
+  scope: storageAccountAudios
+  properties: {
+    roleDefinitionId: storageBlobDataOwnerRoleId
+    principalId: funcStdPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource processorStorageAccountAudiosRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(storageAccountAudios.id, storageBlobDataOwnerRoleId, funcDrblPrincipalId)
+  scope: storageAccountAudios
+  properties: {
+    roleDefinitionId: storageBlobDataOwnerRoleId
+    principalId: funcDrblPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource userStorageAccountAudiosRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(storageAccountAudios.id, storageBlobDataOwnerRoleId, userPrincipalId)
+  scope: storageAccountAudios
+  properties: {
+    roleDefinitionId: storageBlobDataOwnerRoleId
+    principalId: userPrincipalId
+    principalType: userPrincipalType
   }
 }
 
