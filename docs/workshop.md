@@ -13,7 +13,7 @@ contacts: # Required. Must match the number of authors
   - "@damienaicheh"
   - "@ikhemissi"
 duration_minutes: 60
-tags: ignite, azure, azure functions, durable function, flex consumption, azure openai, entra id, cosmos db, csu, codespace, devcontainer
+tags: azure, azure functions, durable function, flex consumption, azure openai, entra id, cosmos db, csu, codespace, devcontainer, ignite
 navigation_levels: 3
 ---
 
