@@ -296,6 +296,7 @@ module roles './modules/security/roles.bicep' = {
 }
 
 output RESOURCE_GROUP string = resourceGroup.name
+output AZURE_UPLOADER_FUNCTION_APP_NAME string = uploaderFunction.outputs.name
 output AZURE_PROCESSOR_FUNCTION_APP_NAME string = processorFunction.outputs.name
 output AUDIOS_STORAGE_ACCOUNT_CONTAINER_NAME string = storageAccountAudios.outputs.containers[0].name
 output AUDIOS_EVENTGRID_SYSTEM_TOPIC_NAME string = eventGrid.outputs.name

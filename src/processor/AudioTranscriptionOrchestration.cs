@@ -70,7 +70,7 @@ namespace FuncDurable
             ILogger logger = context.CreateReplaySafeLogger(nameof(AudioTranscriptionOrchestration));
             if (!context.IsReplaying) { logger.LogInformation($"Processing audio file {audioFile.Id}"); }
 
-            // Step1: TODO: Start transcription
+            // Step1: Start transcription
             var jobUri = await context.CallActivityAsync<string>(nameof(StartTranscription), audioFile);
             audioFile.JobUri = jobUri;
 
@@ -78,14 +78,14 @@ namespace FuncDurable
 
             while (context.CurrentUtcDateTime < endTime)
             {
-                // Step2: TODO: Check if transcription is done
+                // Step2: Check if transcription is done
                 var status = await context.CallActivityAsync<string>(nameof(CheckTranscriptionStatus), audioFile);
 
                 if (!context.IsReplaying) { logger.LogInformation($"Status of the transcription of {audioFile.Id}: {status}"); }
 
                 if (status == "Succeeded" || status == "Failed")
                 {
-                    // Step3: TODO: Get transcription
+                    // Step3: Get transcription
                     string transcription = await context.CallActivityAsync<string>(nameof(GetTranscription), audioFile);
 
                     if (!context.IsReplaying) { logger.LogInformation($"Retrieved transcription of {audioFile.Id}: {transcription}"); }
@@ -134,7 +134,6 @@ namespace FuncDurable
             return jobUri;
         }
 
-
         [Function(nameof(CheckTranscriptionStatus))]
         public static async Task<string> CheckTranscriptionStatus([ActivityTrigger] AudioFile audioFile, FunctionContext executionContext)
         {
@@ -143,7 +142,6 @@ namespace FuncDurable
             var status = await SpeechToTextService.CheckBatchTranscriptionStatus(audioFile.JobUri!);
             return status;
         }
-
 
         [Function(nameof(GetTranscription))]
         public static async Task<string?> GetTranscription([ActivityTrigger] AudioFile audioFile, FunctionContext executionContext)
