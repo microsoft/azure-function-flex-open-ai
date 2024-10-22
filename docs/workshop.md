@@ -305,7 +305,7 @@ You will go back to the Azure Durable Function you did in the previous lab and a
 
 So the scope of the lab is this one:
 
-![Hand's On Lab Architecture Lab](assets/azure-functions-lab4.png)
+![Hand's On Lab Architecture Lab](assets/azure-functions-lab3.png)
 
 ## Enrich the transcription with Azure OpenAI
 
@@ -384,12 +384,13 @@ This will redeploy the 2 Azure Functions automatically for you.
 
 ## Test the scenario
 
-Delete and upload once again the audio file, you will see the 
+You can try to delete and upload once again the audio file in the storage `audios` container of your Storage Account. You will see the `EnrichTranscription` Activity Functions be called in the Azure Functions logs.
+
+You can play with the prompt of the `TextCompletionInput` if you wan't to have a more specific task based on the transcription.
 
 ## Lab 3 : Summary
 
 By now you should have a solution that invoke Azure OpenAI to create a summary of the transcription.
-You can try to delete and upload once again the audio file in the storage `audios` container of your Storage Account. You will see the `EnrichTranscription` Activity Functions be called in the Azure Functions logs.
 
 ---
 
@@ -399,7 +400,7 @@ You can try to delete and upload once again the audio file in the storage `audio
 
 In this lab, you will focus on the following scope :
 
-![Hand's On Lab Architecture Lab](assets/azure-functions-lab3.png)
+![Hand's On Lab Architecture Lab](assets/azure-functions-lab4.png)
 
 [Azure Cosmos DB][cosmos-db] is a fully managed NoSQL database which offers Geo-redundancy and multi-region write capabilities. It currently supports NoSQL, MongoDB, Cassandra, Gremlin, Table and PostgreSQL APIs and offers a serverless option which is perfect for our use case.
 
@@ -485,7 +486,7 @@ You have now a full scenario with your Azure Durable Function!
 
 ---
 
-# Annexe
+# Appendix
 
 ## A bit of theory
 
