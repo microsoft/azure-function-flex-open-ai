@@ -21,7 +21,7 @@ navigation_levels: 3
 
 Welcome to this Azure Functions Workshop. You'll be experimenting with Azure Functions service in multiple labs to achieve a real world scenario. You will use the Azure Functions Flex consumption plan for all of these labs which contains the latest features of Azure Functions. Don't worry, this is a step by step lab, you will be guided through the whole process.
 
-During this workshop you will have the instructions to complete each steps. It is recommended to search for the answers in provided resources and links before looking at the solutions placed under the '📚 Toggle solution' panel.
+During this workshop you will have the instructions to complete each steps. The solutions are placed under the '📚 Toggle solution' panel.
 
 <div class="task" data-title="Task">
 
@@ -50,11 +50,11 @@ The goal of the full lab is to upload an audio file to Azure and save the transc
 
 ## 🔑 Sign in to Azure
 
-<div class="task" data-title="Task">
-
 To retrieve the lab content :
 
-> - [Clone][repo-clone] the repository from the **main** branch or [fork][repo-fork] it if you want to keep track of your changes
+<div class="task" data-title="Task">
+
+> - [Clone][repo-clone] the repository from the **main** branch or [fork][repo-fork] it if you want to keep track of your changes if you have a GitHub account.
 > - Open the project inside VS Code
 > - Log into the provided Azure subscription in your environment using Azure CLI and on the [Azure Portal][az-portal] using your credentials.
 
@@ -76,7 +76,7 @@ az account set --subscription <subscription-id>
 </details>
 
 
-## A bit of theory
+## 🎓 A bit of theory
 
 ### Azure Functions
 
@@ -94,6 +94,8 @@ Security is our first concern at Microsoft. To avoid any credential management i
 - **Simplified Credential Management**: Azure automatically handles the lifecycle of these identities, so you don’t need to manually manage secrets, passwords, or keys.
 - **Seamless Integration**: Managed identities can authenticate to any Azure service that supports Microsoft Entra ID authentication, making it easier to connect and secure your applications.
 - **Cost Efficiency**: There are no additional charges for using managed identities, making it a cost-effective solution for securing your Azure resources.
+
+All the labs use managed identities.
 
 [az-portal]: https://portal.azure.com
 [repo-clone]: https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai
@@ -114,13 +116,15 @@ To check that everything was created as expected, open the [Azure Portal][az-por
 
 ![Storage account access keys](assets/storage-account-show-container.png)
 
+Keep this page open you will need it later to upload your audios to test the different labs.
+
 ## 🧪 Testing locally
 
-Let's run the first function sinde the `src/uploader` folder. Inside the `AudioUpload.cs` you can discover how simple the code is to define an `HTTP Trigger` function to upload an audio file.
+Let's run the first function inside the `src/uploader` folder. In the `AudioUpload.cs` you can discover how simple the code is to define an `HTTP Trigger` function to upload an audio file.
 
 ### Run the function locally
 
-Create a new file called `local.settings.json` and add the following environment variables:
+Create a new file called `local.settings.json` inside `src/uploader` folder and add the following environment variables:
 
 ```json
 {
@@ -138,7 +142,7 @@ To test your function locally, you will need to start the extension `Azurite` to
 
 ![Start Azurite](assets/function-azurite.png)
 
-Then you can use the Azure Function Core Tools to run the function locally:
+Then inside `src/uploader` folder you can use the Azure Function Core Tools to run the function locally:
 
 ```bash
 func start
@@ -181,6 +185,8 @@ You can repeat the same test commands to ensure new files get saved in Azurite w
 
 ## 🚀 Deploy to Azure
 
+You have 2 options to deploy to Azure, the first one is to use VS Code extensions directly and use the interface, the second one is using Azure Developer CLI (azd) which is an open-source tool that accelerates your path from a local development environment to Azure.
+
 ### Option 1 : Deploy your function with VS Code
 
 - Open the Azure extension in VS Code left panel
@@ -193,42 +199,49 @@ You can repeat the same test commands to ensure new files get saved in Azurite w
 
 ### Option 2 : Deploy your function with the Azd
 
-The Azure Developer CLI (azd) is an open-source tool that accelerates your path from a local development environment to Azure. azd provides a set of developer-friendly commands that map to key stages in your workflow (code, build, deploy, monitor).
+The Azure Developer CLI (azd) provides a set of developer-friendly commands that map to key stages in your workflow (code, build, deploy, monitor).
 
-Authenficate with azd:
+To initialize azd you should first authenficate with azd:
 
 ```sh
 azd auth login
 ```
 
-Create an environment called `dev`:
+Create an environment called `dev`, keep this name as it will be used to target pre-deployed resources:
 
 ```sh
-azd env dev
+azd env new dev
 ```
 
-Inside the `.azure/dev` folder generated, update the `.env` file with the following values and make sure to update it as needed:
+Inside the `.azure/dev` folder generated, update the `.env` file with the following values and make sure to update it depending on your Azure resources:
 
 ```sh
-TODO
+AZURE_SUBSCRIPTION_ID="<TO-UPDATE>"
+RESOURCE_GROUP="rg-lab-<TO-UPDATE>"
+AZURE_UPLOADER_FUNCTION_APP_NAME="func-std-<TO-UPDATE>"
+AZURE_PROCESSOR_FUNCTION_APP_NAME="func-drbl-<TO-UPDATE>"
+AUDIOS_EVENTGRID_SYSTEM_TOPIC_NAME="evgt-<TO-UPDATE>"
+AUDIOS_STORAGE_ACCOUNT_CONTAINER_NAME="audios"
+AZURE_ENV_NAME="dev"
+AZURE_LOCATION="eastus2"
 ```
 
-Deploy the functions code:
+Now you can deploy the functions code:
 
 ```sh
-azd provision
+azd deploy
 ```
 
 ## 📜 Test the scenario
 
-Let's give the new function a try using [Postman][postman]. Go to the Azure Function and select `Functions` then `AudioUpload` and select the `Get Function Url` with the `default (function key)`.
+Let's give the new function a try using [Postman][postman]. Go to the Azure Function starting with `func-std-` and select `Functions` then `AudioUpload` and select the `Get Function Url` with the `default (function key)`.
 The Azure Function url is protected by a code to ensure a basic security layer. 
 
 ![Azure Function url credentials](assets/func-url-credentials.png)
 
 Use this url with Postman to upload the audio file.
 
-You can use the provided sample audio files to test the function:
+You can use the provided sample audio files to test the function (click on the link and download the file):
 
 - [Microsoft AI](assets/audios/MicrosoftAI.wav)
 - [Azure Functions](assets/audios/AzureFunctions.wav)
@@ -284,21 +297,19 @@ The Azure Cognitive Services are cloud-based AI services that give the ability t
 
 Cognitive Services can be categorized into five main areas:
 
-- Decision: Content Moderator provides monitoring for possible offensive, undesirable, and risky content. Anomaly Detector allows you to monitor and detect abnormalities in your time series data.
-- Language: Azure Language service provides several Natural Language Processing (NLP) features to understand and analyze text.
-- Speech: Speech service includes various capabilities like speech to text, text to speech, speech translation, and many more.
-- Vision: The Computer Vision service provides you with access to advanced cognitive algorithms for processing images and returning information.
-- Azure OpenAI Service: Powerful language models including the GPT-3, GPT-4, Codex and Embeddings model series for content generation, summarization, semantic search, and natural language to code translation.
+- **Decision:** Content Moderator provides monitoring for possible offensive, undesirable, and risky content. Anomaly Detector allows you to monitor and detect abnormalities in your time series data.
+- **Language:** Azure Language service provides several Natural Language Processing (NLP) features to understand and analyze text.
+- **Speech:** Speech service includes various capabilities like speech to text, text to speech, speech translation, and many more.
+- **Vision:** The Computer Vision service provides you with access to advanced cognitive algorithms for processing images and returning information.
+- **Azure OpenAI Service:** Powerful language models including for instance the GPT-3, GPT-4, Codex and Embeddings model series for content generation, summarization, semantic search, natural language to code translation and much more.
 
 You now want to retrieve the transcript out of the audio file uploaded thanks to the speech to text cognitive service.
 
 <div class="task" data-title="Tasks">
 
 > - Because the transcription can be a long process, you will use the monitor pattern of the Azure Durable Functions to call the speech to text batch API and check the status of the transcription until it's done.
->
 > - Inside the folder `src/processor` a skeleton of the orchestration file called `AudioTranscriptionOrchestration.cs` is provided to you.
 > - Explore the `SpeechToTextService.cs` file and the `Transcription.cs` model provided to get the transcription.
-
 > - Update the `StartTranscription`, `CheckTranscriptionStatus` and `GetTranscription` methods inside the `AudioTranscriptionOrchestration.cs` file
 
 </div>
@@ -308,7 +319,9 @@ You now want to retrieve the transcript out of the audio file uploaded thanks to
 
 The 3 methods `StartTranscription`, `CheckTranscriptionStatus` and `GetTranscription` are activity functions which represent the basic unit of work in a durable function orchestration. In our context Activity functions are the functions and tasks that are orchestrated in the process to communicate with the Speech To Text service.
 
-The `StartTranscription` method will call the `SpeechToTextService` to be able to start the creation of a batch to run the transcription of an Audio file:
+The `StartTranscription` method will call the `SpeechToTextService` to be able to start the creation of a batch to run the transcription of an Audio file.
+
+Update the `StartTranscription` method with this content:
 
 ```csharp
 ILogger logger = executionContext.GetLogger(nameof(StartTranscription));
@@ -323,7 +336,7 @@ return jobUri;
 
 By starting the creation of a batch transcription using the `SpeechToTextService` you will receive a job URI for this transcription. This job URI will be used to check the status of the transcription and get the transcription itself.
 
-Then you will need to implement the `CheckTranscriptionStatus` function:
+Then you will need to update the `CheckTranscriptionStatus` function with this code:
 
 ```csharp
 ILogger logger = executionContext.GetLogger(nameof(CheckTranscriptionStatus));
@@ -367,17 +380,17 @@ You can now deploy your `processor` function and upload an audio file to see if 
 
 ### Option 2 : Deploy your function with the Azd
 
-If you have already setup azd in the previous lab you just have to run:
+If you have already setup azd in the previous lab you just have to run otherwise go back in the previous lab and do the setup:
 
 ```sh
-azd provision
+azd deploy
 ```
 
 This will redeploy the 2 Azure Functions automatically for you.
 
 ## 📜 Test the scenario
 
-By now you should have a solution that invoke the execution of an Azure Durable Function responsible for retrieving the audio transcription thanks to a Speech to Text (Cognitive Service) batch processing call. You will see the different Activity Functions be called in the Azure Functions logs.
+By now you should have a solution that invoke the execution of an Azure Durable Function responsible for retrieving the audio transcription thanks to a Speech to Text (Cognitive Service) batch processing call. You can try to delete and upload once again the audio file in the storage `audios` container of your Storage Account. You will see the different Activity Functions be called in the Azure Functions logs.
 
 ## Lab 2 : Summary
 
@@ -403,9 +416,7 @@ You now have a transcription of your audio file, next step is to store it in a N
 
 > - You will use the [CosmosDBOutput][cosmos-db-output-binding] binding to store the data in the Cosmos DB with a manage identity to connect to Cosmos DB.
 > - Store the `AudioTranscription` object in the Cosmos DB container called `audios_transcripts`.
->
-> - Create a new `Activity Function` called `SaveTranscription` to store the transcription of the audio file in Cosmos DB.
-> - Update the `SaveTranscription` method inside the `AudioTranscriptionOrchestration.cs` file
+> - Update the activity Function called `SaveTranscription` to store the transcription of the audio file in Cosmos DB.
 
 </div>
 
@@ -439,9 +450,7 @@ Those environment variables are already set in the Azure Function App settings (
 
 ## 🚀 Deploy to Azure
 
-You can now redeploy your function and upload an audio file to see if the transcription is stored in the Cosmos DB container and check the logs to see the different steps of the orchestration.
-
-Deploy the Azure Durable Function using the same method as before to `func-drbl-<your-instance-suffix-name>`.
+You can now redeploy your Azure Durable Function code using the same method as before to `func-drbl-<your-instance-suffix-name>`.
 
 ### Option 1 : Deploy your function with VS Code
 
@@ -458,7 +467,7 @@ Deploy the Azure Durable Function using the same method as before to `func-drbl-
 If you have already setup azd in the previous lab you just have to run:
 
 ```sh
-azd provision
+azd deploy
 ```
 
 This will redeploy the 2 Azure Functions automatically for you.
@@ -471,10 +480,10 @@ You can now validate the entire workflow : delete and upload once again the audi
 
 ## Lab 3 : Summary
 
-By now you should have a solution that :
+By now you should have a solution that:
 
 - Invoke the execution of an Azure Durable Function responsible for retrieving the audio transcription thanks to a Speech to Text (Cognitive Service) batch processing call.
-- Once the transcription is retrieved, the Azure Durable Function store this value in a Cosmos DB database.
+- Once the transcription is retrieved, the Azure Durable Function store this value in the Cosmos DB database.
 
 [cosmos-db-output-binding]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-output?tabs=python-v2%2Cisolated-process%2Cnodejs-v4%2Cextensionv4&pivots=programming-language-csharp
 [cosmos-db]: https://learn.microsoft.com/en-us/azure/cosmos-db/scripts/cli/nosql/serverless
@@ -496,6 +505,7 @@ So the scope of the lab is this one:
 <div class="task" data-title="Tasks">
 
 > - Update the Activity function `EnrichTranscription` inside the `AudioTranscriptionOrchestration.cs` to call Azure OpenAI via `TextCompletionInput`
+> - Ask the model to Summarize the audio transcription 
 > - Use the result to update the `Completion` field of the transcription.
 
 </div>
@@ -513,7 +523,7 @@ public static AudioTranscription EnrichTranscription(
 )
 ```
 
-This will be managed for you the authentication to the Azure OpenAI service and send the transcription to the service to get a summary of the transcription.
+This will manage for you the authentication to the Azure OpenAI service and send the transcription to the service to get a summary of the transcription.
 
 Then you just have to consume the `Content` property of the response object and update the `Completion` field of the `AudioTranscription` object:
 
@@ -560,7 +570,7 @@ Deploy the Azure Durable Function using the same method as before in the Azure F
 If you have already setup azd in the previous lab you just have to run:
 
 ```sh
-azd provision
+azd deploy
 ```
 
 This will redeploy the 2 Azure Functions automatically for you.

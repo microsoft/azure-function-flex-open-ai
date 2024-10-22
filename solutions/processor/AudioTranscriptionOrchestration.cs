@@ -124,22 +124,32 @@ namespace FuncDurable
         [Function(nameof(StartTranscription))]
         public static async Task<string> StartTranscription([ActivityTrigger] AudioFile audioFile, FunctionContext executionContext)
         {
-            // TO UPDATE
-            return "TODO";
+            ILogger logger = executionContext.GetLogger(nameof(StartTranscription));
+            logger.LogInformation($"Starting transcription of {audioFile.Id}");
+
+            var jobUri = await SpeechToTextService.CreateBatchTranscription(audioFile.UrlWithSasToken, audioFile.Id);
+
+            logger.LogInformation($"Job uri for {audioFile.Id}: {jobUri}");
+
+            return jobUri;
         }
 
         [Function(nameof(CheckTranscriptionStatus))]
         public static async Task<string> CheckTranscriptionStatus([ActivityTrigger] AudioFile audioFile, FunctionContext executionContext)
         {
-            // TO UPDATE
-            return "TODO";
+            ILogger logger = executionContext.GetLogger(nameof(CheckTranscriptionStatus));
+            logger.LogInformation($"Checking the transcription status of {audioFile.Id}");
+            var status = await SpeechToTextService.CheckBatchTranscriptionStatus(audioFile.JobUri!);
+            return status;
         }
 
         [Function(nameof(GetTranscription))]
         public static async Task<string?> GetTranscription([ActivityTrigger] AudioFile audioFile, FunctionContext executionContext)
         {
-            // TO UPDATE
-            return "TODO";
+            ILogger logger = executionContext.GetLogger(nameof(GetTranscription));
+            var transcription = await SpeechToTextService.GetTranscription(audioFile.JobUri!);
+            logger.LogInformation($"Transcription of {audioFile.Id}: {transcription}");
+            return transcription;
         }
 
         [Function(nameof(EnrichTranscription))]
@@ -148,8 +158,10 @@ namespace FuncDurable
             [TextCompletionInput("Summarize {Result}", Model = "%CHAT_MODEL_DEPLOYMENT_NAME%")] TextCompletionResponse response
         )
         {
-            // TO UPDATE
-            return null;
+            ILogger logger = executionContext.GetLogger(nameof(EnrichTranscription));
+            logger.LogInformation($"Enriching transcription {audioTranscription.Id}");
+            audioTranscription.Completion = response.Content;
+            return audioTranscription;
         }
 
         [Function(nameof(SaveTranscription))]
@@ -159,8 +171,12 @@ namespace FuncDurable
                  CreateIfNotExists = true)]
         public static AudioTranscription SaveTranscription([ActivityTrigger] AudioTranscription audioTranscription, FunctionContext executionContext)
         {
-            // TO UPDATE
-            return null;
+            ILogger logger = executionContext.GetLogger(nameof(SaveTranscription));
+            logger.LogInformation("Saving the audio transcription...");
+
+            return audioTranscription;
         }
     }
+
+
 }
