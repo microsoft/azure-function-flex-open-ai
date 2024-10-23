@@ -283,7 +283,7 @@ If you have already setup azd in the previous lab you can continue with it, othe
 If you have already setup azd in the previous lab you just have to run otherwise go back in the previous lab and do the setup:
 
 ```sh
-azd deploy
+azd deploy processor
 ```
 
 This will redeploy the 2 Azure Functions automatically for you.
@@ -397,7 +397,7 @@ Deploy the Azure Durable Function using the same method as before in the Azure F
 If you have already setup azd in the previous lab you just have to run:
 
 ```sh
-azd deploy
+azd deploy processor
 ```
 
 This will redeploy the 2 Azure Functions automatically for you.
@@ -485,7 +485,7 @@ You can now redeploy your Azure Durable Function code using the same method as b
 If you have already setup azd in the previous lab you just have to run:
 
 ```sh
-azd deploy
+azd deploy processor
 ```
 
 This will redeploy the 2 Azure Functions automatically for you.
