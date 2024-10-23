@@ -492,9 +492,13 @@ This will redeploy the 2 Azure Functions automatically for you.
 
 ## Test the scenario
 
-You can now validate the entire workflow : delete and upload once again the audio file. You should see the new item created above in your Cosmos DB container with also a property called `completion` with a summary of the audio made by Azure OpenAI:
+You can now validate the entire workflow : delete and upload once again the audio file. You will see the `SaveTranscription` Activity Functions be called in the Azure Functions logs:
 
-![Open AI Summary Result](assets/open-ai-summary-result.png)
+![Save Transcription activity function](assets/func-save-transcription.png)
+
+You should also see the new item created above in your Cosmos DB container with also a property called `completion` with a summary of the audio made by Azure OpenAI:
+
+![Func Cosmos Summary Result](assets/func-cosmos-summary-result.png)
 
 ## Lab 4 : Summary
 

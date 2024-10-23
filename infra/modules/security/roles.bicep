@@ -79,6 +79,27 @@ resource cosmosDbDataContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleD
   }
 }
 
+
+resource userCosmosDbReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-05-15' = {
+  parent: cosmosDbAccount
+  name: guid(cosmosDbAccount.id, cosmosDbDataReader.id, userPrincipalId)
+  properties: {
+    roleDefinitionId: cosmosDbDataReader.id
+    principalId: userPrincipalId
+    scope: cosmosDbAccount.id
+  }
+}
+
+resource userCosmosDbContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-05-15' = {
+  parent: cosmosDbAccount
+  name: guid(cosmosDbAccount.id, cosmosDbDataContributor.id, userPrincipalId)
+  properties: {
+    roleDefinitionId: cosmosDbDataContributor.id
+    principalId: userPrincipalId
+    scope: cosmosDbAccount.id
+  }
+}
+
 resource funcStdCosmosDbReader 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-05-15' = {
   parent: cosmosDbAccount
   name: '51f03358-a4a2-b520-f424-1f6b236c26ba'
