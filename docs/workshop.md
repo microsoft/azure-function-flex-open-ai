@@ -87,23 +87,7 @@ In this first lab you will setup the environment to make sure everything is work
 
 ## Deploy to Azure
 
-You have 2 options to deploy the Azure Functions code to Azure. The first one is to use the VS Code extensions directly and use the interface, the second one is using Azure Developer CLI (azd) which is an open-source tool that accelerates your path from a local development environment to Azure.
-
-### Option 1 : Deploy your function with VS Code
-
-- Open the Azure extension in VS Code left panel
-- Make sure you're signed in to your Azure account
-- Open the Function App panel
-- Right-click on your function app inside `src/uploader` and select `Deploy to Function App...`
-- Select the Function starting with `func-std-`
-- Right-click on your function app inside `src/processor` and select `Deploy to Function App...`
-- Select the Function starting with `func-drbl-`
-
-![Deploy to Function App](assets/function-app-deploy.png)
-
-### Option 2 : Deploy your function with Azd
-
-The Azure Developer CLI (azd) provides a set of developer-friendly commands that map to key stages in your workflow (code, build, deploy, monitor).
+The Azure Developer CLI (azd) is an open-source tool that accelerates your path from a local development environment to Azure. It provides a set of developer-friendly commands that map to key stages in your workflow (code, build, deploy, monitor).
 
 To initialize azd you should first authenficate with azd:
 
@@ -135,6 +119,18 @@ Now you can deploy the functions code:
 ```sh
 azd deploy
 ```
+
+In case of issues, you can also deploy the functions manually using the Azure Functions extension in VS Code:
+
+- Open the Azure extension in VS Code left panel
+- Make sure you're signed in to your Azure account
+- Open the Function App panel
+- Right-click on your function app inside `src/uploader` and select `Deploy to Function App...`
+- Select the Function starting with `func-std-`
+- Right-click on your function app inside `src/processor` and select `Deploy to Function App...`
+- Select the Function starting with `func-drbl-`
+
+![Deploy to Function App](assets/function-app-deploy.png)
 
 ## Audio files
 
@@ -266,27 +262,9 @@ Each of those functions (`StartTranscription`, `CheckTranscriptionStatus` and `G
 
 You can now deploy your `processor` function and upload an audio file to see if the transcription is correctly running and check the logs of your Azure Function to see the different steps of the orchestration running. 
 
-If you have already setup azd in the previous lab you can continue with it, otherwise you can use the VS Code extension to deploy the function.
-
-### Option 1 : Deploy your function with VS Code
-
-- Open the Azure extension in VS Code left panel
-- Make sure you're signed in to your Azure account
-- Open the Function App panel
-- Right-click on your function app inside `src/processor` and select `Deploy to Function App...`
-- Select the Function starting with `func-drbl-`
-
-![Deploy to Function App](assets/function-app-deploy.png)
-
-### Option 2 : Deploy your function with Azd
-
-If you have already setup azd in the previous lab you just have to run otherwise go back in the previous lab and do the setup:
-
 ```sh
 azd deploy processor
 ```
-
-This will redeploy the 2 Azure Functions automatically for you.
 
 ## Test the scenario
 
@@ -380,27 +358,11 @@ public static AudioTranscription EnrichTranscription(
 
 ## Deploy to Azure
 
-Deploy the Azure Durable Function using the same method as before in the Azure Function App starting with `func-drbl-<your-instance-suffix-name>`.
-
-### Option 1 : Deploy your function with VS Code
-
-- Open the Azure extension in VS Code left panel
-- Make sure you're signed in to your Azure account
-- Open the Function App panel
-- Right-click on your function app inside `src/processor` and select `Deploy to Function App...`
-- Select the Function starting with `func-drbl-`
-
-![Deploy to Function App](assets/function-app-deploy.png)
-
-### Option 2 : Deploy your function with Azd
-
-If you have already setup azd in the previous lab you just have to run:
+You can now redeploy your `processor` function and upload an audio file to see if the transcription is correctly running and check the logs of your Azure Function to see the different steps of the orchestration running. 
 
 ```sh
 azd deploy processor
 ```
-
-This will redeploy the 2 Azure Functions automatically for you.
 
 ## Test the scenario
 
@@ -468,27 +430,11 @@ Those environment variables are already set in the Azure Function App settings (
 
 ## Deploy to Azure
 
-You can now redeploy your Azure Durable Function code using the same method as before to `func-drbl-<your-instance-suffix-name>`.
-
-### Option 1 : Deploy your function with VS Code
-
-- Open the Azure extension in VS Code left panel
-- Make sure you're signed in to your Azure account
-- Open the Function App panel
-- Right-click on your function app inside `src/processor` and select `Deploy to Function App...`
-- Select the Function starting with `func-drbl-`
-
-![Deploy to Function App](assets/function-app-deploy.png)
-
-### Option 2 : Deploy your function with Azd
-
-If you have already setup azd in the previous lab you just have to run:
+You can now redeploy your `processor` function and upload an audio file to see if the transcription is correctly running and check the logs of your Azure Function to see the different steps of the orchestration running. 
 
 ```sh
 azd deploy processor
 ```
-
-This will redeploy the 2 Azure Functions automatically for you.
 
 ## Test the scenario
 
