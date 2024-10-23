@@ -26,9 +26,8 @@ During this workshop you will have the instructions to complete each steps. The 
 <div class="task" data-title="Task">
 
 > - You will find the instructions and expected configurations for each Lab step in these yellow **TASK** boxes.
-> - Inputs and parameters to select will be defined, all the rest can remain as default as it has no impact on the scenario.
 > - Log into your Azure subscription locally using Azure CLI and on the [Azure Portal][az-portal] using the credentials provided to you.
-> In this version of the implementation, you will be using the [.NET 8 Isolated][in-process-vs-isolated] runtime.
+> - In this version of the implementation, you will be using the [.NET 8 Isolated][in-process-vs-isolated] runtime.
 
 </div>
 
@@ -54,7 +53,7 @@ To retrieve the lab content :
 
 <div class="task" data-title="Task">
 
-> - [Clone][repo-clone] the repository from the **main** branch or [fork][repo-fork] it if you want to keep track of your changes if you have a GitHub account.
+> - On your Desktop, [Clone][repo-clone] the repository from the **main** branch or [fork it][repo-fork] if you want to keep track of your changes if you have a GitHub account.
 > - Open the project inside VS Code
 > - Log into the provided Azure subscription in your environment using Azure CLI and on the [Azure Portal][az-portal] using your credentials.
 
@@ -150,6 +149,8 @@ You can use one of the sample audio files provided in the workshop:
 - [Microsoft AI](assets/audios/MicrosoftAI.wav)
 - [Azure Functions](assets/audios/AzureFunctions.wav)
 
+Just click on each link and download the file.
+
 </details>
 
 ## Lab 1 : Summary
@@ -182,10 +183,10 @@ Durable Function is an extension of Azure Functions that lets you write stateful
 
 ## Detect a file upload event 
 
-Now, you have the audio file uploaded in the storage account. To detect when a new audio is uploaded in the Storage Account an `Event Grid System Topic` was created for you. This [Event Grid Subscription][blob-trigger-event-grid] listen to the event of uploading in your `audios` container based on this configuration:
+Now, you have the audio file uploaded in the storage account. To detect when a new audio is uploaded in the Storage Account an `Event Grid System Topic` was created for you. This Event Grid Subscription listen to the event of uploading in your `audios` container based on this configuration:
 
 - Filter to Event Types: `Blob Created`
-- A **Web Hook** event was created which is targetting the Azure Durable function to trigger the `AudioBlobUploadStart` method.
+- A **Web Hook** event was already created for you, which is targetting the Azure Durable function to trigger the `AudioBlobUploadStart` method.
 - This event is only triggerd for `.wav` files
 
 ## Consume Speech to Text APIs
@@ -263,7 +264,9 @@ Each of those functions (`StartTranscription`, `CheckTranscriptionStatus` and `G
 
 ## Deploy to Azure
 
-You can now deploy your `processor` function and upload an audio file to see if the transcription is correctly running and check the logs of your Azure Function to see the different steps of the orchestration running.
+You can now deploy your `processor` function and upload an audio file to see if the transcription is correctly running and check the logs of your Azure Function to see the different steps of the orchestration running. 
+
+If you have already setup azd in the previous lab you can continue with it, otherwise you can use the VS Code extension to deploy the function.
 
 ### Option 1 : Deploy your function with VS Code
 
@@ -289,11 +292,26 @@ This will redeploy the 2 Azure Functions automatically for you.
 
 By now you should have a solution that invoke the execution of an Azure Durable Function responsible for retrieving the audio transcription thanks to a Speech to Text (Cognitive Service) batch processing call. You can try to delete and upload once again the audio file in the storage `audios` container of your Storage Account. You will see the different Activity Functions be called in the Azure Functions logs.
 
+After a few minutes, you should see the transcription of the audio file in the logs of the Azure Function:
+
+For the `StartTranscription` Activity Function:
+
+![Start Transcription activity function](assets/func-start-transcription.png)
+
+For the `CheckTranscriptionStatus` Activity Function:
+
+![Check Transcription activity function](assets/func-check-transcription.png)
+
+As you can see, multiple calls are made to the `CheckTranscriptionStatus` Activity Function to check the status of the transcription.
+
+For the `GetTranscription` Activity Function:
+
+![Get Transcription activity function](assets/func-get-transcription.png)
+
+
 ## Lab 2 : Summary
 
 You have now a connection setup between your Azure Durable Function and the Speech to Text service to do the transcription of the audio files.
-
-[blob-trigger-event-grid]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger?pivots=programming-language-csharp
 
 ---
 
@@ -312,7 +330,7 @@ So the scope of the lab is this one:
 <div class="task" data-title="Tasks">
 
 > - Update the Activity function `EnrichTranscription` inside the `AudioTranscriptionOrchestration.cs` to call Azure OpenAI via `TextCompletionInput`
-> - Ask the model to Summarize the audio transcription 
+> - Define a prompt to ask the model to summarize the audio transcription 
 > - Use the result to update the `Completion` field of the transcription.
 
 </div>
@@ -329,6 +347,8 @@ public static AudioTranscription EnrichTranscription(
     [TextCompletionInput("Summarize {Result}", Model = "%CHAT_MODEL_DEPLOYMENT_NAME%")] TextCompletionResponse response
 )
 ```
+
+The `TextCompletionInput` binding is defining a prompt to ask the model to summarize the audio transcription. It will use the `CHAT_MODEL_DEPLOYMENT_NAME` environment variable to get the model name to use.
 
 This will manage for you the authentication to the Azure OpenAI service and send the transcription to the service to get a summary of the transcription.
 
@@ -384,7 +404,9 @@ This will redeploy the 2 Azure Functions automatically for you.
 
 ## Test the scenario
 
-You can try to delete and upload once again the audio file in the storage `audios` container of your Storage Account. You will see the `EnrichTranscription` Activity Functions be called in the Azure Functions logs.
+You can try to delete and upload once again the audio file in the storage `audios` container of your Storage Account. You will see the `EnrichTranscription` Activity Functions be called in the Azure Functions logs:
+
+![Enrich Transcription activity function](assets/func-enrich-transcription.png)
 
 You can play with the prompt of the `TextCompletionInput` if you wan't to have a more specific task based on the transcription.
 
@@ -436,7 +458,9 @@ public static AudioTranscription SaveTranscription([ActivityTrigger] AudioTransc
 
 As you can see, by just defining the binding, the Azure Function will take care of storing the data in the Cosmos DB container, so you just need to return the object you want to store, in this case, the `AudioTranscription` object.
 
-To be able to connect the Azure Function to the Cosmos DB, you have the `COSMOS_DB_DATABASE_NAME`, the `COSMOS_DB_CONTAINER_ID` and the `COSMOS_DB` environment variables. The `COSMOS_DB` will be the connection key that will be concatenated with `__accountEndpoint` to specify the Cosmos DB account endpoint so it will be able to connect using Managed identity.
+To be able to connect the Azure Function to the Cosmos DB, you have the `COSMOS_DB_DATABASE_NAME`, the `COSMOS_DB_CONTAINER_ID` and the `COSMOS_DB` environment variables. 
+
+The `COSMOS_DB` value will be the connection key which will be concatenated with `__accountEndpoint` to specify the Cosmos DB account endpoint so it will be able to connect using Managed identity.
 
 Those environment variables are already set in the Azure Function App settings (`func-drbl-<your-instance-name>`) when the infrastructure was deployed.
 
@@ -482,7 +506,7 @@ By now you should have a solution that:
 You have now a full scenario with your Azure Durable Function!
 
 [cosmos-db-output-binding]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-output?tabs=python-v2%2Cisolated-process%2Cnodejs-v4%2Cextensionv4&pivots=programming-language-csharp
-[cosmos-db]: https://learn.microsoft.com/en-us/azure/cosmos-db/scripts/cli/nosql/serverless
+[cosmos-db]: https://learn.microsoft.com/en-us/azure/cosmos-db/introduction
 
 ---
 
