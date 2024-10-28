@@ -47,7 +47,7 @@ The goal of the full lab is to upload an audio file to Azure and save the transc
 1. The Azure Durable Function will use Azure OpenAI to generate a summary of the audio file from the transcription
 1. The Azure Durable Function will then store the transcription and its summary in Cosmos DB
 
-## Sign in to Azure
+## Fork the workshop repository
 
 To retrieve the lab content :
 
@@ -55,7 +55,42 @@ To retrieve the lab content :
 
 > - On your Desktop, [Clone][repo-clone] the repository from the **main** branch or [fork it][repo-fork] if you want to keep track of your changes if you have a GitHub account.
 > - Open the project inside VS Code
-> - Log into the provided Azure subscription in your environment using Azure CLI and on the [Azure Portal][az-portal] using your credentials.
+
+</div>
+
+
+## Application deployment
+
+You can deploy Function Apps using multiple options including [Azure Developer CLI (azd)][azd] and the [Azure Functions extension for VS Code][vscode-azure-functions-extension].
+
+The Azure Developer CLI (azd) is an open-source tool that accelerates your path from a local development environment to Azure. It provides a set of developer-friendly commands that map to key stages in your workflow (code, build, deploy, monitor).
+
+In this workshop, by default, you will be provided with instructions and solutions using `azd` but you can also opt for using the VS Code extension if you prefer:
+
+![Deploy to Function App](assets/function-app-deploy.png)
+
+
+[az-portal]: https://portal.azure.com
+[repo-clone]: https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai
+[repo-fork]: https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai/fork
+[in-process-vs-isolated]: https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-in-process-differences
+[azd]: https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/
+[az-cli]: https://learn.microsoft.com/en-us/cli/azure/
+[vscode-azure-functions-extension]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-vs-code?tabs=node-v4%2Cpython-v2%2Cisolated-process%2Cquick-create&pivots=programming-language-csharp
+
+---
+
+# Lab 1 : Prepare the environment
+
+In this first lab you will setup the environment to make sure everything is working as expected.
+
+## Log into Azure
+
+<div class="task" data-title="Task">
+
+> - Use the provided Azure subscription details to log into the [Azure Portal][az-portal].
+> - Log into the provided Azure subscription using Azure CLI.
+> - Log into the provided Azure subscription using Azure Developer CLI.
 
 </div>
 
@@ -66,61 +101,74 @@ To retrieve the lab content :
 ```bash
 # Login to Azure : 
 az login
+
 # Display your account details
 az account show
+
 # Select your Azure subscription
 az account set --subscription <subscription-id>
+
+# Go to the project directory
+cd <cloned-project-path>
+
+# Authenticate using azd
+azd auth login
 ```
 
 </details>
 
-[az-portal]: https://portal.azure.com
-[repo-clone]: https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai
-[repo-fork]: https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai/fork
-[in-process-vs-isolated]: https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-in-process-differences
+## Provision resources on Azure
 
----
+If you are attending an instructor-led session at Ignite, please skip this section as Azure resources have already been provisioned for you via the Skillable platform. 
 
-# Lab 1 : Configure the environment
+<div class="task" data-title="Task">
 
-In this first lab you will setup the environment to make sure everything is working as expected.
+> - Create a new azd environment named `ignite`
+> - Use azd to provision resources on `East US 2`
 
-## Deploy to Azure
+</div>
 
-The Azure Developer CLI (azd) is an open-source tool that accelerates your path from a local development environment to Azure. It provides a set of developer-friendly commands that map to key stages in your workflow (code, build, deploy, monitor).
+<details>
 
-To initialize azd you should first authenficate with azd:
+<summary> Toggle solution</summary>
 
-```sh
-azd auth login
+```bash
+# Create resources using the IaC defined in the infra directory
+azd provision
 ```
 
-Create an environment called `dev`, keep this name as it will be used to target pre-deployed resources:
+</details>
+
+
+## Deploy Functions to Azure
+
+Refresh your azd environment using the following commands:
 
 ```sh
-azd env new dev
+azd env set AZURE_LOCATION eastus2 -e ignite --no-prompt
+azd env refresh -e ignite
 ```
 
-Inside the `.azure/dev` folder generated, update the `.env` file with the following values and make sure to update it depending on your Azure resources:
+This will create an `.azure/ignite` folder representing the state of the environment, and it will add a `.env` file to it with the following values:
 
 ```sh
-AZURE_SUBSCRIPTION_ID="<TO-UPDATE>"
-RESOURCE_GROUP="rg-lab-<TO-UPDATE>"
-AZURE_UPLOADER_FUNCTION_APP_NAME="func-std-<TO-UPDATE>"
-AZURE_PROCESSOR_FUNCTION_APP_NAME="func-drbl-<TO-UPDATE>"
-AUDIOS_EVENTGRID_SYSTEM_TOPIC_NAME="evgt-<TO-UPDATE>"
+AZURE_SUBSCRIPTION_ID="<SUBSCRIPTION-ID>"
+RESOURCE_GROUP="rg-lab-<suffix>"
+AZURE_UPLOADER_FUNCTION_APP_NAME="func-std-<suffix>"
+AZURE_PROCESSOR_FUNCTION_APP_NAME="func-drbl-<suffix>"
+AUDIOS_EVENTGRID_SYSTEM_TOPIC_NAME="evgt-<suffix>"
 AUDIOS_STORAGE_ACCOUNT_CONTAINER_NAME="audios"
-AZURE_ENV_NAME="dev"
+AZURE_ENV_NAME="ignite"
 AZURE_LOCATION="eastus2"
 ```
 
-Now you can deploy the functions code:
+Now you can deploy all your Function Apps using the following command:
 
 ```sh
 azd deploy
 ```
 
-In case of issues, you can also deploy the functions manually using the Azure Functions extension in VS Code:
+If you encounter any issues, you can also deploy the functions manually using the Azure Functions extension in VS Code:
 
 - Open the Azure extension in VS Code left panel
 - Make sure you're signed in to your Azure account
@@ -130,26 +178,85 @@ In case of issues, you can also deploy the functions manually using the Azure Fu
 - Right-click on your function app inside `src/processor` and select `Deploy to Function App...`
 - Select the Function starting with `func-drbl-`
 
-![Deploy to Function App](assets/function-app-deploy.png)
 
-## Audio files
+## Test the setup
 
-Open the [Azure Portal][az-portal] and go to your resource group inside your subscription and select the storage account which is starting with `sto`. You will use it to upload the audios files inside the `audios` container later in the labs:
+To test the environment setup, we will upload an audio file using the uploader function and make sure it was uploaded to the audio's blob storage.
 
-![Storage account access keys](assets/storage-account-show-container.png)
+<div class="task" data-title="Task">
 
-Keep this page open you will need it later to upload your audios to test the different labs.
+> - Check the storage account which name starts with `sto`.
+> - Ensure the `audios` container is empty
 
-You can use one of the sample audio files provided in the workshop:
+</div>
+
+<details>
+
+<summary> Toggle solution</summary>
+
+- Open the [Azure Portal][az-portal]
+- Go to your resource group inside the subscription
+- Select the storage account which is starting with `sto`
+- Check the `audios` container
+- Make sure that it is empty
+
+![Storage account for audio files](assets/storage-account-show-container.png)
+
+</details>
+
+
+Use the following command to upload an audio file to the audio's storage account with the uploader function:
+
+```sh
+curl -v -F audio=@./assets/audios/MicrosoftAI.wav https://${AZURE_UPLOADER_FUNCTION_APP_NAME}.azurewebsites.net/api/AudioUpload
+```
+
+Wait for the request to finish then make sure the audio file was uploaded to the `audios` container which you have checked at the beginning.
+
+
+The following sample audio files are provided in the workshop, so feel free to retry testing the uploader function with another file:
 
 - [Microsoft AI](assets/audios/MicrosoftAI.wav)
 - [Azure Functions](assets/audios/AzureFunctions.wav)
 
-Just click on each link and download the file.
+
+## Managed identities and RBAC
+
+Check the App settings of the uploader function and you should notice that there are no secrets allowing it to access the blob storage.
+
+![Upload function app settings](assets/uploader-function-app-settings.png)
+
+All resources in the workshop were provisioned with managed identities, and access control is handled via roles.
+Using RBAC is a security best practice which helps you manage who has access to Azure resources, what they can do with those resources, and what areas they have access to.
+
+<div class="task" data-title="Task">
+
+> - Which role is being used by the uploader function to publish telemetry data to Application Insights ?
+
+</div>
+
+<details>
+
+<summary> Toggle solution</summary>
+
+- Open the [Azure Portal][az-portal]
+- Go to your resource group inside the subscription
+- Select the uploader function (the name starts with `func-std-`)
+- Under the blade menu on the left, select `Settings` then `Identity`
+- Click on `Azure role assignments`
+- Locate the role used with the resource type `Application Insights`
+- You should see `Monitoring Metrics Publisher`
+
+![Telemtry role assignment](assets/uploader-function-telemetry-role-assignment.png)
 
 </details>
 
+
 ## Lab 1 : Summary
+
+In this Lab, you have deployed multiple Function Apps using `azd` and you have tested the uploader function by uploading an audio file to the `audios` blob storage.
+
+All communications were secured using managed identities and RBAC.
 
 By now you should be ready to deploy the new updates of your Azure Functions for the next labs.
 
@@ -163,13 +270,15 @@ By now you should be ready to deploy the new updates of your Azure Functions for
 
 # Lab 2 : Speech to text transcription
 
-In this lab, you will focus on the following scope :
+In this lab, you will use a Durable Function together with Azure AI services to process uploaded files by generating transcriptions.
+
+The scope of the lab will be:
 
 ![Hand's On Lab Architecture Lab](assets/azure-functions-lab2.png)
 
 Processing the audio file involves the following actions:
-- Detecting file uploads
-- Creating a transcript of the file
+- Detecting file uploads using Blob Storage events and Event Grid
+- Creating a transcript of the file using Speech To Text
 - Saving the transcript to Azure Cosmos DB
 - Generating a summary with Azure OpenAI
 
