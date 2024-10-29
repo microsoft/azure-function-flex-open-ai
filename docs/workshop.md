@@ -492,6 +492,12 @@ You should also see a new item created in your Cosmos DB container called **audi
 
 By now you should have a solution that invoke Azure OpenAI to create a summary of the transcription.
 
+Congratulations!
+
+Well done on completing the lab at Ignite! Your dedication and hard work have truly paid off. Keep up the great work!
+
+![](assets/congrats.jpeg)
+
 ---
 
 # Bonus : Secure your Azure Function with Azure API Management
