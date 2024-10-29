@@ -641,21 +641,32 @@ At the end of this lab you should have an Azure Function exposed as an API via A
 
 # Useful links
 
-If you want to see more scenarios regarding APIs and Azure Open AI you can look at this repository:
-
-[AI-Gateway][azure-apim-open-ai-git-repo]
-
 You can find the entire lab step by step with a deep dive on Azure Functions in this link:
 
-[Product Hands-on Lab - Azure Functions deep dive][azure-function-deep-dive]
+- [Product Hands-on Lab - Azure Functions deep dive][azure-function-deep-dive]
 
-You can find the GenAI Gateway Landing Zone in the following link:
+General topics regarding Azure Functions Flex Consumption:
 
-[GenAI Gateway Landing Zone][gen-ai-gateway-accelerator]
+- [Flex Consumption samples and quickstarts][quick-start-flex]
+
+- [Load test HTTP based Azure Functions][load-testing-for-azure-functions]
+
+- [Performance Optimize HTTP based Flex Consumption apps][performance-improvement]
+
+Deep dive with the GenAI Gateway Landing Zone in the following link:
+
+- [GenAI Gateway Landing Zone][gen-ai-gateway-accelerator]
+
+If you want to see more scenarios regarding APIs and Azure Open AI you can look at this repository:
+
+- [AI-Gateway][azure-apim-open-ai-git-repo]
 
 [azure-apim-open-ai-git-repo]: https://github.com/Azure-Samples/AI-Gateway/tree/main
 [azure-function-deep-dive]: https://moaw.dev/workshop/gh:microsoft/hands-on-lab-azure-functions/main/docs/
 [gen-ai-gateway-accelerator]: https://aka.ms/apim-genai-lza
+[quick-start-flex]: https://aka.ms/flexconsumption/samples
+[load-testing-for-azure-functions]: https://learn.microsoft.com/en-us/azure/load-testing/how-to-create-load-test-function-app
+[performance-improvement]: https://learn.microsoft.com/en-us/azure/load-testing/how-to-optimize-azure-functions
 
 ---
 
