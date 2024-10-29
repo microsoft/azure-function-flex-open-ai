@@ -643,8 +643,13 @@ You can find the entire lab step by step with a deep dive on Azure Functions in 
 
 [Product Hands-on Lab - Azure Functions deep dive][azure-function-deep-dive]
 
+You can find the Azure Landing Zone for APIM and Azure Open AI:
+
+[APIM - Azure Open AI Landing Zone][gen-ai-gateway-accelerator]
+
 [azure-apim-open-ai-git-repo]: https://github.com/Azure-Samples/AI-Gateway/tree/main
 [azure-function-deep-dive]: https://moaw.dev/workshop/gh:microsoft/hands-on-lab-azure-functions/main/docs/
+[gen-ai-gateway-accelerator]: https://aka.ms/apim-genai-lza
 
 ---
 
