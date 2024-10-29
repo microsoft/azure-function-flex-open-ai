@@ -391,6 +391,13 @@ For the `GetTranscription` Activity Function:
 
 ![Get Transcription activity function](assets/func-get-transcription.png)
 
+You should also see a new item created in your Cosmos DB container. Inside **Data Explorer** > **HolDb** in the container called **audios_transcripts**:
+
+![Func Cosmos Summary Result](assets/func-cosmos-summary-result-audios.png)
+
+You will see also the `SaveTranscription` Activity Functions be called in the Azure Functions logs:
+
+![Save Transcription activity function](assets/func-save-transcription.png)
 
 ## Lab 2 : Summary
 
@@ -477,91 +484,152 @@ You can try to delete and upload once again the audio file in the storage `audio
 
 You can play with the prompt of the `TextCompletionInput` if you wan't to have a more specific task based on the transcription.
 
+You should also see a new item created in your Cosmos DB container called **audios_transcripts** with also a property called `completion` with a summary of the audio made by Azure OpenAI:
+
+![Func Cosmos Summary Result](assets/func-cosmos-summary-result-open-ai.png)
+
 ## Lab 3 : Summary
 
 By now you should have a solution that invoke Azure OpenAI to create a summary of the transcription.
 
 ---
 
-# Lab 4 : Use Azure Functions with Cosmos DB
+# Bonus : Secure your Azure Function with Azure API Management
 
-## Store data to Cosmos DB
+Let's now integrate the Azure Functions with Azure API Management (APIM) to expose the transcription of the audio file as an API. 
 
-In this lab, you will focus on the following scope :
+Previously to test your Azure Function you had to get the Function URL with the *default (function key)* to ensure a basic security layer. But in a real-world scenario, you will need to secure your Azure Function and expose it through an API Gateway like Azure API Management.
 
-![Hand's On Lab Architecture Lab](assets/azure-functions-lab4.png)
+In fact, with Azure API Management you can expose your Azure Functions as APIs and manage them with policies like authentication, rate limiting, caching, etc. You can manage who can call your Azure Function by providing a subscription key or using OAuth 2.0 authentication.
 
-[Azure Cosmos DB][cosmos-db] is a fully managed NoSQL database which offers Geo-redundancy and multi-region write capabilities. It currently supports NoSQL, MongoDB, Cassandra, Gremlin, Table and PostgreSQL APIs and offers a serverless option which is perfect for our use case.
+In this lab you will see how to expose the Azure Function as an API using Azure API Management:
 
-You now have a transcription of your audio file, next step is to store it in a NoSQL database inside Cosmos DB.
+![Hand's On Lab Architecture Lab](assets/azure-functions-lab-bonus.png)
+
+## Define the API in APIM
+
+### Import the Azure Function
+
+Inside your resource group, you should see an APIM instance. Click on it, you will be redirected to the APIM instance overview.
 
 <div class="task" data-title="Tasks">
 
-> - You will use the [CosmosDBOutput][cosmos-db-output-binding] binding to store the data in the Cosmos DB with a manage identity to connect to Cosmos DB.
-> - Store the `AudioTranscription` object in the Cosmos DB container called `audios_transcripts`.
-> - Update the activity Function called `SaveTranscription` to store the transcription of the audio file in Cosmos DB.
+> - Define the Azure Function (`func-std-`) endpoints as an API in Azure API Management.
+
+</div>
+
+<div class="tip" data-title="Tips">
+
+> - [Import Azure Function Azure API Management][import-azure-function-azure-api-management]<br>
 
 </div>
 
 <details>
-<summary> Toggle solution</summary>
+<summary>📚 Toggle solution</summary>
 
-To store the transcription of the audio file in Cosmos DB, you will need to update the `Activity Function` called `SaveTranscription` in the `AudioTranscriptionOrchestration.cs` file and apply the `CosmosDBOutput` binding to store the data in the Cosmos DB:
+First, go to the **APIs** section in the left menu and click on the **+ Add API** button.
 
-```csharp
-[Function(nameof(SaveTranscription))]
-[CosmosDBOutput("%COSMOS_DB_DATABASE_NAME%",
-                    "%COSMOS_DB_CONTAINER_ID%",
-                    Connection = "COSMOS_DB",
-                    CreateIfNotExists = true)]
-public static AudioTranscription SaveTranscription([ActivityTrigger] AudioTranscription audioTranscription, FunctionContext executionContext)
-{
-    ILogger logger = executionContext.GetLogger(nameof(SaveTranscription));
-    logger.LogInformation("Saving the audio transcription...");
+Then select the **Function App** option:
 
-    return audioTranscription;
-}
-```
+![Select Function App](assets/apim-import-function.png)
 
-As you can see, by just defining the binding, the Azure Function will take care of storing the data in the Cosmos DB container, so you just need to return the object you want to store, in this case, the `AudioTranscription` object.
+In the popup menu to create a Function select **Browse**, this will redirect you to the list of all Azure Functions in your Subscription. Click on the **Select** button and pick the Azure Function which is responsible for the transcription of the audio file. It should start by `func-std-`.
 
-To be able to connect the Azure Function to the Cosmos DB, you have the `COSMOS_DB_DATABASE_NAME`, the `COSMOS_DB_CONTAINER_ID` and the `COSMOS_DB` environment variables. 
+![Select Function](assets/apim-select-function-app.png)
 
-The `COSMOS_DB` value will be the connection key which will be concatenated with `__accountEndpoint` to specify the Cosmos DB account endpoint so it will be able to connect using Managed identity.
+Then you will see automatically the list of endpoints, select the **AudioUpload** and the **GetTranscriptions** endpoints and click on the **Select** button.
 
-Those environment variables are already set in the Azure Function App settings (`func-drbl-<your-instance-name>`) when the infrastructure was deployed.
+This will fill all the information needed to create the API in APIM, let's update the API details to have something more meaningful.
+
+- **Display name**: `Audio Transcription API`
+- **Name**: `audio-transcription-api`
+- **API Url Suffix**: `audios-transcriptions`
+
+![API Details](assets/apim-import-function-detail-form.png)
+
+ You can now click on the **Create** button.
+
+ You should see the new API in the list of APIs in your APIM instance.
 
 </details>
 
-## Deploy to Azure
+### What happened behind the scenes?
 
-You can now redeploy your `processor` function and upload an audio file to see if the transcription is correctly running and check the logs of your Azure Function to see the different steps of the orchestration running. 
+If you navigate to the **Backends** section of your APIM you should see a line pointing to the Azure Function App you just imported:
 
-```sh
-azd deploy processor
-```
+![APIM Backend](assets/apim-backends-list.png)
 
-## Test the scenario
+This is a declaration of the Azure Function App as a backend in APIM. This will allow you to call the Azure Function from the API Gateway.
 
-You can now validate the entire workflow : delete and upload once again the audio file. You will see the `SaveTranscription` Activity Functions be called in the Azure Functions logs:
+Now, inside the **Named values** section of the APIM you should see a line which represent the storage of the Azure Function **Host keys** to authorize the APIM to call the Azure Function:
 
-![Save Transcription activity function](assets/func-save-transcription.png)
+![APIM Named Values](assets/apim-named-value-key.png)
 
-You should also see the new item created above in your Cosmos DB container with also a property called `completion` with a summary of the audio made by Azure OpenAI:
+This key was created automatically by Azure, if you go in your Azure Function, inside **Functions** > **App keys** you will see an access given to the APIM instance:
 
-![Func Cosmos Summary Result](assets/func-cosmos-summary-result.png)
+![Function App Key](assets/apim-azure-function-host-keys.png)
 
-## Lab 4 : Summary
+So now the APIM instance can call the Azure Function with this key hidden for the user.
 
-By now you should have a solution that:
+When defining an API on APIM you can protect it using different methods like OAuth 2.0, Subscription keys, etc.
 
-- Invoke the execution of an Azure Durable Function responsible for retrieving the audio transcription thanks to a Speech to Text (Cognitive Service) batch processing call.
-- Once the transcription is retrieved, the Azure Open AI model will enrich your transcript and the Azure Durable Function will store it in the Cosmos DB database. 
+If you go to your definition of the API in APIM, in the **Settings** tab you will see the **Subscription required** option. This option allows you to protect your API with a subscription key which should be passed in the header or in the query string of the request:
 
-You have now a full scenario with your Azure Durable Function!
+![APIM Subscription Key](assets/apim-api-settings.png)
 
-[cosmos-db-output-binding]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-output?tabs=python-v2%2Cisolated-process%2Cnodejs-v4%2Cextensionv4&pivots=programming-language-csharp
-[cosmos-db]: https://learn.microsoft.com/en-us/azure/cosmos-db/introduction
+You can specify the **Subscription key header name** and the **Subscription key query parameter name** to define how the subscription key should be passed in the request.
+
+## Call your API
+
+### Test inside APIM
+
+<div class="task" data-title="Tasks">
+
+> - Test your API inside Azure API Management and upload a new audio file .
+
+</div>
+
+<details>
+<summary>📚 Toggle solution</summary>
+
+Select your API in the **APIs** section of your APIM instance and click on the **Test** tab, and let's test the `AudioUpload` endpoint:
+
+![APIM Test](assets/apim-select-api-for-testing.png)
+
+In the `Request Body` section of the request, select **Binary** and select your audio file to upload. Then click on the **Send** button.
+
+You should see the result of the call with the status code of `200` and the response body like this:
+
+![APIM Test call result](assets/apim-test-call-result.png)
+
+By calling the API from this menu, APIM is automatically adding the subscription key in the header of the request to call the Azure Function. You can see the detail of the request by clicking on the **Trace** button to run the request with all the details of the call. You will see it in the **Trace** tab of the `HTTP response` section.
+
+</details>
+
+### Test inside Postman
+
+Let's test this in Postman to see how it works. Open the Postman application and copy/paste the URL from your API in APIM. It should be inside the **Test** tab:
+
+![APIM Test URL](assets/apim-test-tab-url.png)
+
+In Postman, create a new request and paste the URL in the URL field. Select the **Body** tab and select **form-data** as the type of the body. Then define `audios` as a key and select your audio file to upload.
+
+Run the request, and you should see a `401` status code because you need to add the subscription key in the header of the request. In fact the APIM give you the possibility to protect your API with a subscription key.
+
+To do so, go back to your APIM instance and select the **Subscriptions** tab and click on the **+ Add Subscription** button to create a new subscription key dedicated to your API:
+
+![APIM Add Subscription](assets/apim-create-api-subscription-key.png)
+
+Then you can copy the subscription key and add it in the header of your request in Postman in the `Ocp-Apim-Subscription-Key` key. Run the request again, and you should see a `200` status code:
+
+![Postman Test](assets/apim-postman-sucess-result.png)
+
+
+## Bonus : Summary
+
+At the end of this lab you should have an Azure Function exposed as an API via Azure API Management. You should be able to call this API with a subscription key to upload an audio file to the storage account.
+
+[import-azure-function-azure-api-management]: https://learn.microsoft.com/en-us/azure/api-management/import-function-app-as-api
 
 ---
 
