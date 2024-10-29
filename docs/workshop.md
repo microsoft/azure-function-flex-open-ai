@@ -633,7 +633,32 @@ At the end of this lab you should have an Azure Function exposed as an API via A
 
 ---
 
+# Useful links
+
+If you want to see more scenarios regarding APIs and Azure Open AI you can look at this repository:
+
+[AI-Gateway][azure-apim-open-ai-git-repo]
+
+You can find the entire lab step by step with a deep dive on Azure Functions in this link:
+
+[Product Hands-on Lab - Azure Functions deep dive][azure-function-deep-dive]
+
+[azure-apim-open-ai-git-repo]: https://github.com/Azure-Samples/AI-Gateway/tree/main
+[azure-function-deep-dive]: https://moaw.dev/workshop/gh:microsoft/hands-on-lab-azure-functions/main/docs/
+
+---
+
 # Closing the workshop
+
+If you are attending an instructor-led session at Ignite, please:
+
+<div class="task" data-title="Task">
+
+> Visit the Skillable Lab page and click End Session to end the session and release all resources. This allows the lab to be run again without quota issues for others.
+
+</div>
+
+If you are doing it outside an instructor-led session at Ignite:
 
 Once you're done with this lab you can delete the resource group you created at the beginning.
 
