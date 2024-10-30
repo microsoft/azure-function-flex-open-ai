@@ -202,15 +202,15 @@ To test the environment setup, we will upload an audio file using the uploader f
 
 </details>
 
-Inside VS Code, use the following command to upload an audio file to the audio's storage account with the uploader function:
+Inside VS Code, open the `audioupload.http` file located on the root directory, then click on the `Send Request` button.
+This will send a request to the uploader function to upload an audio file to the audio's storage account:
 
-```sh
-curl -v -F audio=@\./docs/assets/audios/MicrosoftAI.wav https://${AZURE_UPLOADER_FUNCTION_APP_NAME}.azurewebsites.net/api/AudioUpload
-```
+![Uploading a file from VS Code](assets/vscode-upload-audio-file.png)
 
+A loader will appear on the Status Bar (at the bottom) to indicate that the upload is in progress.
 Wait for the request to finish then make sure the audio file was uploaded to the `audios` container which you have checked at the beginning.
 
-The following sample audio files are provided in the workshop, so feel free to retry testing the uploader function with another file:
+The following sample audio files are provided in the workshop, so feel free to retry testing the uploader function with another file by updating the `audioupload.http` file:
 
 - [Azure Functions](assets/audios/AzureFunctions.wav)
 - [Microsoft AI](assets/audios/MicrosoftAI.wav)

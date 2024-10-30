@@ -41,7 +41,9 @@
         "ms-azuretools.azure-dev",
         "ms-azuretools.vscode-azurefunctions",
         // Bicep
-        "ms-azuretools.vscode-bicep"
+        "ms-azuretools.vscode-bicep",
+        // HTTP client
+        "humao.rest-client"
       ]
     }
   }

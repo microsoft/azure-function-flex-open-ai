@@ -19,3 +19,6 @@ $filter="/blobServices/default/containers/" + ${env:AUDIOS_STORAGE_ACCOUNT_CONTA
 az eventgrid system-topic event-subscription create -n audio-files-topic-subscription -g ${env:RESOURCE_GROUP} --system-topic-name ${env:AUDIOS_EVENTGRID_SYSTEM_TOPIC_NAME} --endpoint-type webhook --endpoint $endpointUrl --included-event-types Microsoft.Storage.BlobCreated --subject-begins-with $filter
 
 Write-Output "Created blob event grid subscription successfully."
+
+# Load azd environment variables to .env file for testing deployed functions
+azd env get-values > .env
