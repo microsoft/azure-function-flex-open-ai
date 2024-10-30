@@ -317,3 +317,6 @@ paket-files/
 __pycache__/
 *.pyc
 .azure
+
+# Environment variables
+.env
