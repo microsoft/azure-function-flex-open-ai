@@ -149,7 +149,7 @@ namespace FuncDurable
         )
         {
             // TO UPDATE
-            return null;
+            return audioTranscription;
         }
 
         [Function(nameof(SaveTranscription))]
