@@ -54,9 +54,23 @@ To retrieve the lab content :
 <div class="task" data-title="Task">
 
 > - On your Desktop, [Clone][repo-clone] the repository from the **main** branch or [fork it][repo-fork] if you want to keep track of your changes if you have a GitHub account.
-> - Open the project inside VS Code
+> - Open the project inside Visual Studio Code
 
 </div>
+
+<details>
+
+<summary> Toggle solution</summary>
+
+Open the command prompt and run the following command:
+
+```sh
+git clone https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai.git
+```
+
+Open this repository with Visual Studio Code.
+
+</details>
 
 ## Application deployment
 
