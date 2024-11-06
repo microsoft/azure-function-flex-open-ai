@@ -156,8 +156,15 @@ azd provision
 
 Refresh your azd environment using the following commands:
 
+<div class="important" data-title="Important">
+
+> - The value of the `AZURE_LOCATION` option should be set depending on where your resources are deployed.
+> - If the resources are deployed in East US you should use `eastus`, if they are deployed in East US 2 you should use `eastus2`
+
+</div>
+
 ```sh
-azd env set AZURE_LOCATION eastus2 -e ignite --no-prompt
+azd env set AZURE_LOCATION <YOUR-RESOURCE-LOCATION> -e ignite --no-prompt
 azd env refresh -e ignite
 ```
 
@@ -171,7 +178,7 @@ AZURE_PROCESSOR_FUNCTION_APP_NAME="func-drbl-<suffix>"
 AUDIOS_EVENTGRID_SYSTEM_TOPIC_NAME="evgt-<suffix>"
 AUDIOS_STORAGE_ACCOUNT_CONTAINER_NAME="audios"
 AZURE_ENV_NAME="ignite"
-AZURE_LOCATION="eastus2"
+AZURE_LOCATION="<YOUR-RESOURCE-LOCATION>"
 ```
 
 Now you can deploy all your Function Apps using the following command:
@@ -216,6 +223,14 @@ To test the environment setup, we will upload an audio file using the uploader f
 
 </details>
 
+You have 2 options to test the upload of a `.wav` file: 
+- Using VS Code
+- Using Postman
+
+Choose the most convenient one for you.
+
+### Option 1: Upload with VS Code
+
 Inside VS Code, open the `audioupload.http` file located on the root directory, then click on the `Send Request` button.
 This will send a request to the uploader function to upload an audio file to the audio's storage account:
 
@@ -229,6 +244,26 @@ The following sample audio files are provided in the workshop, so feel free to r
 - [Azure Functions](assets/audios/AzureFunctions.wav)
 - [Microsoft AI](assets/audios/MicrosoftAI.wav)
 
+Go back to the Storage Account and check the `audios` container. You should see the files that you uploaded with your `AudioUpload` Azure Function!
+
+## Option 2: Upload with Postman
+
+Using [Postman][postman], first go to the Azure Function and inside the function starting with `func-std-`, select `Functions` then `AudioUpload` and select the `Get Function Url` with the `default (function key)`.
+
+![Azure Function url credentials](assets/func-url-credentials.png)
+
+Use this url with Postman to upload the audio file.
+
+You can use the provided sample audio files to test the function:
+
+- [Azure Functions](assets/audios/AzureFunctions.wav)
+- [Microsoft AI](assets/audios/MicrosoftAI.wav)
+
+Create a POST request and in the row where you set the key to `audio` for instance then, make sure to select the `file` option in the hidden dropdown menu to be able to select a file in the value field:
+
+![Postman](assets/func-postman.png)
+
+Go back to the Storage Account and check the `audios` container. You should see the files that you uploaded with your `AudioUpload` Azure Function!
 
 ## Managed identities and RBAC
 
