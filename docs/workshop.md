@@ -112,7 +112,7 @@ In this first lab you will setup the environment to make sure everything is work
 
 ```bash
 # Login to Azure : 
-az login
+az login -u <username> -p <password>
 
 # Display your account details
 az account show
