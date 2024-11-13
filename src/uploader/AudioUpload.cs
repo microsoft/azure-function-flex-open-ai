@@ -1,50 +1,40 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Azure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Azure.Storage.Blobs;
 
 namespace FuncStd
 {
-    public class AudioUploadOutput
-    {
-        [BlobOutput("%STORAGE_ACCOUNT_CONTAINER%/{rand-guid}.wav", Connection = "AudioUploadStorage")]
-        public byte[] Blob { get; set; }
-
-        public required IActionResult HttpResponse { get; set; }
-    }
-
     public class AudioUpload
     {
         private readonly ILogger _logger;
+        private readonly BlobContainerClient _audioContainerClient;
 
-        public AudioUpload(ILoggerFactory loggerFactory)
+        public AudioUpload(ILoggerFactory loggerFactory, IAzureClientFactory<BlobServiceClient> blobClientFactory)
         {
             _logger = loggerFactory.CreateLogger<AudioUpload>();
+            var storageAccountContainer = Environment.GetEnvironmentVariable("STORAGE_ACCOUNT_CONTAINER") ?? throw new ArgumentNullException("STORAGE_ACCOUNT_CONTAINER");
+            _audioContainerClient = blobClientFactory.CreateClient("audioUploader").GetBlobContainerClient(storageAccountContainer);
+            _audioContainerClient.CreateIfNotExists();
         }
 
         [Function(nameof(AudioUpload))]
-        public AudioUploadOutput Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req
         )
         {
             _logger.LogInformation("Processing a new audio file upload request");
 
             // Get the first file in the form
-            byte[]? audioFileData = null;
             var file = req.Form.Files[0];
 
-            using (var memstream = new MemoryStream())
-            {
-                file.OpenReadStream().CopyTo(memstream);
-                audioFileData = memstream.ToArray();
-            }
+            // Store the file as a blob
+            await _audioContainerClient.UploadBlobAsync($"{Guid.NewGuid()}.wav", file.OpenReadStream());
 
             // Store the file as a blob and return a success response
-            return new AudioUploadOutput()
-            {
-                Blob = audioFileData,
-                HttpResponse = new OkObjectResult("Uploaded!")
-            };
+            return new OkObjectResult("Uploaded!");
         }
 
     }
