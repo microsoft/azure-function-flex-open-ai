@@ -72,29 +72,22 @@ Open this repository with Visual Studio Code.
 
 </details>
 
-## Application deployment
-
-You can deploy Function Apps using multiple options including [Azure Developer CLI (azd)][azd] and the [Azure Functions extension for VS Code][vscode-azure-functions-extension].
-
-The Azure Developer CLI (azd) is an open-source tool that accelerates your path from a local development environment to Azure. It provides a set of developer-friendly commands that map to key stages in your workflow (code, build, deploy, monitor).
-
-In this workshop, by default, you will be provided with instructions and solutions using `azd` but you can also opt for using the VS Code extension if you prefer:
-
-![Deploy to Function App](assets/function-app-deploy.png)
 
 [az-portal]: https://portal.azure.com
 [repo-clone]: https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai
 [repo-fork]: https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai/fork
 [in-process-vs-isolated]: https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-in-process-differences
-[azd]: https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/
 [az-cli]: https://learn.microsoft.com/en-us/cli/azure/
-[vscode-azure-functions-extension]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-vs-code?tabs=node-v4%2Cpython-v2%2Cisolated-process%2Cquick-create&pivots=programming-language-csharp
 
 ---
 
 # Lab 1 : Prepare the environment
 
 In this first lab you will setup the environment to make sure everything is working as expected.
+
+The Azure Developer CLI (azd) is an open-source tool that accelerates your path from a local development environment to Azure. It provides a set of developer-friendly commands that map to key stages in your workflow (code, build, deploy, monitor).
+
+In this workshop, by default, you will be provided with instructions and solutions using `azd`.
 
 ## Log into Azure
 
@@ -187,7 +180,11 @@ Now you can deploy all your Function Apps using the following command:
 azd deploy
 ```
 
-If you encounter any issues, you can also deploy the functions manually using the Azure Functions extension in VS Code:
+## Application deployment with VS Code
+
+Skip this section if you have deployed the Function Apps using the [Azure Developer CLI (azd)][azd].
+
+If you encounter any issues, you can also deploy the functions manually using the [Azure Functions extension for VS Code][vscode-azure-functions-extension] in VS Code:
 
 - Open the Azure extension in VS Code left panel
 - Make sure you're signed in to your Azure account
@@ -197,6 +194,7 @@ If you encounter any issues, you can also deploy the functions manually using th
 - Right-click on your function app inside `src/processor` and select `Deploy to Function App...`
 - Select the Function starting with `func-drbl-`
 
+![Deploy to Function App](assets/function-app-deploy.png)
 
 ## Test the setup
 
@@ -305,6 +303,8 @@ All communications were secured using managed identities and RBAC.
 
 By now you should be ready to deploy the new updates of your Azure Functions for the next labs.
 
+[azd]: https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/
+[vscode-azure-functions-extension]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-vs-code?tabs=node-v4%2Cpython-v2%2Cisolated-process%2Cquick-create&pivots=programming-language-csharp
 [az-portal]: https://portal.azure.com
 [azure-function-core-tools]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Cwindows%2Ccsharp%2Cportal%2Cbash
 [in-process-vs-isolated]: https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-in-process-differences
