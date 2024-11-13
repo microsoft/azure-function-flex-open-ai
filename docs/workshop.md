@@ -246,7 +246,7 @@ The following sample audio files are provided in the workshop, so feel free to r
 
 Go back to the Storage Account and check the `audios` container. You should see the files that you uploaded with your `AudioUpload` Azure Function!
 
-## Option 2: Upload with Postman
+### Option 2: Upload with Postman
 
 Using [Postman][postman], first go to the Azure Function and inside the function starting with `func-std-`, select `Functions` then `AudioUpload` and select the `Get Function Url` with the `default (function key)`.
 
