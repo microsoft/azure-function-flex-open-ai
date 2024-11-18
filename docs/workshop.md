@@ -462,7 +462,9 @@ You have now a connection setup between your Azure Durable Function and the Spee
 
 In this lab you will use Azure Functions to call the Azure OpenAI service to analyze the transcription of the audio file and add some information to the Cosmos DB entry.
 
-You will go back to the Azure Durable Function you did in the previous lab and add a connection to Azure OpenAI to be able to summarize the transcription you saved.
+You will go back to the durable function app you worked on in the previous lab and add a connection to Azure OpenAI to be able to summarize the transcription you saved.
+
+This connection to Azure OpenAI will preview the new [Azure Functions OpenAI text completion binding](https://learn.microsoft.com/azure/azure-functions/functions-bindings-openai-textcompletion-input?tabs=isolated-process&pivots=programming-language-csharp), which makes developing with Azure OpenAI much easier.
 
 So the scope of the lab is this one:
 
@@ -523,7 +525,7 @@ public static AudioTranscription EnrichTranscription(
 
 ## Deploy to Azure
 
-You can now redeploy your `processor` function and upload an audio file to see if the transcription is correctly running and check the logs of your Azure Function to see the different steps of the orchestration running. 
+You can now redeploy your `processor` function and upload an audio file to see if the transcription is correctly running and check the logs of your durable function app to see the different steps of the orchestration running. 
 
 ```sh
 azd deploy processor
@@ -531,7 +533,7 @@ azd deploy processor
 
 ## Test the scenario
 
-You can try to delete and upload once again the audio file in the storage `audios` container of your Storage Account. You will see the `EnrichTranscription` Activity Functions be called in the Azure Functions logs:
+You can try to delete and upload once again the audio file in the storage `audios` container of your Storage Account. You will see the `EnrichTranscription` Activity functions be called in the function app's logs:
 
 ![Enrich Transcription activity function](assets/func-enrich-transcription.png)
 
@@ -543,11 +545,19 @@ You should also see a new item created in your Cosmos DB container called **audi
 
 ## Lab 3 : Summary
 
-By now you should have a solution that invoke Azure OpenAI to create a summary of the transcription.
+By now you should have a solution that invokes Azure OpenAI to create a summary of the transcription.
 
 Congratulations!
 
 Well done on completing the lab at Ignite! Your dedication and hard work have truly paid off. Keep up the great work!
+
+Continue on for a bonus lab to integrate your functions with Azure API Management. If not, visit us at the Serverless booth to learn more about the technologies you tried out today:
+
+- Azure Functions Flex Consumption plan
+- Azure Durable Functions
+- Azure OpenAI text completion binding
+- Azure AI Speech to text
+- Azure Functions' triggers and bindings
 
 ![](assets/congrats.jpeg)
 
