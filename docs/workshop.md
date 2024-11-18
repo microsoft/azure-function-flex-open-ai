@@ -19,7 +19,7 @@ navigation_levels: 3
 
 # Build serverless intelligent Apps with Azure Functions Flex Consumption and extension for OpenAI
 
-Welcome to this Azure Functions Workshop. You'll be experimenting with Azure Functions service in multiple labs to achieve a real world scenario. You will use the Azure Functions Flex consumption plan for all of these labs which contains the latest features of Azure Functions. Don't worry, this is a step by step lab, you will be guided through the whole process.
+Welcome to this Azure Functions Workshop. You'll be experimenting with the Azure Functions service in multiple labs to achieve a real world scenario. For all of these labs, you will use Functions' new [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan), which is now in general availability at Ignite. Don't worry, this is a step by step lab, and you will be guided through the whole process.
 
 During this workshop you will have the instructions to complete each steps. The solutions are placed under the 'Toggle solution' panel.
 
@@ -38,14 +38,14 @@ The goal of the full lab is to upload an audio file to Azure and save the transc
 
 ![Hand's On Lab Architecture](assets/architecture-overview.png)
 
-1. The first Azure Function (standard function) will be mainly responsible for uploading the audio file to the Storage Account.
+1. The first Azure Function app will be mainly responsible for uploading the audio file to the Storage Account.
 1. Whenever a blob is uploaded to the Storage Account, a `BlobCreated` event will be emitted to Event Grid
-1. The Event Grid System Topic will push the event (in real time) to trigger the Azure Durable Function
-1. The Azure Durable Function will start processing the audio file
-1. The Azure Durable Function will use the Speech To Text service for audio transcription. It will use the Monitor pattern to check every few seconds if the transcription is done.
-1. The Azure Durable Function will retrieve the transcription from the Speech to Text service
-1. The Azure Durable Function will use Azure OpenAI to generate a summary of the audio file from the transcription
-1. The Azure Durable Function will then store the transcription and its summary in Cosmos DB
+1. The Event Grid System Topic will push the event (in real time) to trigger another function app, an Azure Durable Function
+1. The durable function app will start processing the audio file
+1. The durable function app will use the Speech To Text service for audio transcription. It will use the Monitor pattern to check every few seconds if the transcription is done.
+1. The durable function app will retrieve the transcription from the Speech to Text service
+1. The durable function app will use Azure OpenAI to generate a summary of the audio file from the transcription
+1. The durable function app will then store the transcription and its summary in Cosmos DB
 
 ## Get the workshop repository
 
@@ -90,7 +90,7 @@ code hands-on-lab-azure-functions-flex-openai
 
 In this first lab you will setup the environment to make sure everything is working as expected.
 
-The Azure Developer CLI (azd) is an open-source tool that accelerates your path from a local development environment to Azure. It provides a set of developer-friendly commands that map to key stages in your workflow (code, build, deploy, monitor).
+The [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/overview) (azd) is an open-source tool that accelerates your path from a local development environment to Azure. It provides a set of developer-friendly commands that map to key stages in your workflow (code, build, deploy, monitor).
 
 In this workshop, by default, you will be provided with instructions and solutions using `azd`.
 
@@ -152,6 +152,8 @@ azd provision
 
 ## Deploy Functions to Azure
 
+In this lab, your function apps are already provisioned in Azure for you. This section will guide you in deploying the project code, the functions, to be hosted on those function apps.
+
 Refresh your azd environment using the following commands:
 
 <div class="important" data-title="Important">
@@ -179,7 +181,7 @@ AZURE_ENV_NAME="ignite"
 AZURE_LOCATION="<YOUR-RESOURCE-LOCATION>"
 ```
 
-Now you can deploy all your Function Apps using the following command:
+Now you can deploy the project code to the function apps by using the following command:
 
 ```sh
 azd deploy
@@ -187,17 +189,19 @@ azd deploy
 
 ## Application deployment with VS Code
 
-Skip this section if you have deployed the Function Apps using the [Azure Developer CLI (azd)][azd].
+Skip this section if you have deployed the project code using the [Azure Developer CLI (azd)][azd].
 
 If you encounter any issues, you can also deploy the functions manually using the [Azure Functions extension for VS Code][vscode-azure-functions-extension] in VS Code:
 
 - Open the Azure extension in VS Code left panel
 - Make sure you're signed in to your Azure account
-- Open the Function App panel
-- Right-click on your function app inside `src/uploader` and select `Deploy to Function App...`
-- Select the Function starting with `func-std-`
-- Right-click on your function app inside `src/processor` and select `Deploy to Function App...`
-- Select the Function starting with `func-drbl-`
+- Expand the Function App node
+- Right-click on the function app starting with `func-std-` and select `Deploy to Function App`
+- In the command palette, select `Browse` and navigate to the `src/uploader` directory.
+- This will deploy the `uploader` project files and code to the function app.
+- Right-click on the function app starting with `func-drbl-` and select `Deploy to Function App...`
+- In the command palette, select `Browse` and navigate to the `src/processor` directory.
+- This will deploy the `processor` project files and code to the durable function app.
 
 ![Deploy to Function App](assets/function-app-deploy.png)
 
@@ -247,11 +251,11 @@ The following sample audio files are provided in the workshop in the `assets` > 
 - [Azure Functions](assets/audios/AzureFunctions.wav)
 - [Microsoft AI](assets/audios/MicrosoftAI.wav)
 
-Go back to the Storage Account and check the `audios` container. You should see the files that you uploaded with your `AudioUpload` Azure Function!
+Go back to the Storage Account and check the `audios` container. You should see the files that you uploaded with your `AudioUpload` function!
 
 ### Option 2: Upload with Postman
 
-Using [Postman][postman], first go to the Azure Function and inside the function starting with `func-std-`, select `Functions` then `AudioUpload` and select the `Get Function Url` with the `default (function key)`.
+Using [Postman][postman], first go to the function app starting with `func-std-`, select `Functions` then `AudioUpload` and select the `Get Function Url` with the `default (function key)`.
 
 ![Azure Function url credentials](assets/func-url-credentials.png)
 
@@ -266,11 +270,11 @@ Create a POST request and in the row where you set the key to `audio` for instan
 
 ![Postman](assets/func-postman.png)
 
-Go back to the Storage Account and check the `audios` container. You should see the files that you uploaded with your `AudioUpload` Azure Function!
+Go back to the Storage Account and check the `audios` container. You should see the files that you uploaded with your `AudioUpload` function!
 
 ## Managed identities and RBAC
 
-Check the App settings of the uploader function (the one started with `func-std`) and you should notice that there are no secrets allowing it to access the blob storage.
+Check the App settings of the uploader function app (the one started with `func-std`) and you should notice that there are no secrets allowing it to access the blob storage.
 
 ![Upload function app settings](assets/uploader-function-app-settings.png)
 
@@ -289,7 +293,7 @@ Using RBAC is a security best practice which helps you manage who has access to 
 
 - Open the [Azure Portal][az-portal]
 - Go to your resource group inside the subscription
-- Select the uploader function (the name starts with `func-std-`)
+- Select the uploader function app (the name starts with `func-std-`)
 - Under the blade menu on the left, select `Settings` then `Identity`
 - Click on `Azure role assignments`
 - Locate the role used with the resource type `Application Insights`
@@ -302,7 +306,7 @@ Using RBAC is a security best practice which helps you manage who has access to 
 
 ## Lab 1 : Summary
 
-In this Lab, you have deployed multiple Function Apps using `azd` and you have tested the uploader function by uploading an audio file to the `audios` blob storage.
+In this Lab, you have deployed multiple function apps using `azd` and you have tested the uploader function by uploading an audio file to the `audios` blob storage.
 
 All communications were secured using managed identities and RBAC.
 
@@ -334,7 +338,7 @@ Processing the audio file involves the following actions:
 
 To ensure the execution of all these steps and to orchestrate all of this process, you will need a Durable Function which is already created for you in `src/processor`.
 
-Durable Function is an extension of Azure Functions that lets you write stateful functions in a serverless environment. This extension manages state, checkpoints, and restarts for you.
+[Durable Functions](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview) are an extension of Azure Functions that lets you write stateful functions in a serverless environment. This extension manages state, checkpoints, and restarts for you.
 
 ## Detect a file upload event 
 
@@ -428,7 +432,7 @@ azd deploy processor
 
 By now you should have a solution that invoke the execution of an Azure Durable Function responsible for retrieving the audio transcription thanks to a Speech to Text batch processing call. You can try to upload once again an audio file in the storage `audios` container of your Storage Account with one of the previous methods you chose. You will see the different Activity Functions be called in the Azure Functions logs.
 
-After a few minutes, you should see the transcription of the audio file in the logs of the Azure Function (the one started with `func-drbl-`):
+After a few minutes, you should see the transcription of the audio file in the logs of the durable function app (the one started with `func-drbl-`):
 
 For the `StartTranscription` Activity Function:
 
@@ -462,7 +466,9 @@ You have now a connection setup between your Azure Durable Function and the Spee
 
 In this lab you will use Azure Functions to call the Azure OpenAI service to analyze the transcription of the audio file and add some information to the Cosmos DB entry.
 
-You will go back to the Azure Durable Function you did in the previous lab and add a connection to Azure OpenAI to be able to summarize the transcription you saved.
+You will go back to the durable function app you worked on in the previous lab and add a connection to Azure OpenAI to be able to summarize the transcription you saved.
+
+This connection to Azure OpenAI will preview the new [Azure Functions OpenAI text completion binding](https://learn.microsoft.com/azure/azure-functions/functions-bindings-openai-textcompletion-input?tabs=isolated-process&pivots=programming-language-csharp), which makes developing with Azure OpenAI much easier.
 
 So the scope of the lab is this one:
 
@@ -523,7 +529,7 @@ public static AudioTranscription EnrichTranscription(
 
 ## Deploy to Azure
 
-You can now redeploy your `processor` function and upload an audio file to see if the transcription is correctly running and check the logs of your Azure Function to see the different steps of the orchestration running. 
+You can now redeploy your `processor` function and upload an audio file to see if the transcription is correctly running and check the logs of your durable function app to see the different steps of the orchestration running. 
 
 ```sh
 azd deploy processor
@@ -531,7 +537,7 @@ azd deploy processor
 
 ## Test the scenario
 
-You can try to upload once again the audio file in the storage `audios` container of your Storage Account. You will see the `EnrichTranscription` Activity Functions be called in the Azure Functions logs:
+You can try to upload once again the audio file in the storage `audios` container of your Storage Account. You will see the `EnrichTranscription` Activity Functions be called in the function app's logs:
 
 ![Enrich Transcription activity function](assets/func-enrich-transcription.png)
 
@@ -543,11 +549,19 @@ You should also see a new item created in your Cosmos DB container called **audi
 
 ## Lab 3 : Summary
 
-By now you should have a solution that invoke Azure OpenAI to create a summary of the transcription.
+By now you should have a solution that invokes Azure OpenAI to create a summary of the transcription.
 
 Congratulations!
 
 Well done on completing the lab at Ignite! Your dedication and hard work have truly paid off. Keep up the great work!
+
+Continue on for a bonus lab to integrate your functions with Azure API Management. If not, visit us at the Serverless booth to learn more about the technologies you tried out today:
+
+- Azure Functions Flex Consumption plan
+- Azure Durable Functions
+- Azure OpenAI text completion binding
+- Azure AI Speech to text
+- Azure Functions' triggers and bindings
 
 ![](assets/congrats.jpeg)
 
