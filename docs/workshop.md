@@ -333,7 +333,7 @@ Processing the audio file involves the following actions:
 
 To ensure the execution of all these steps and to orchestrate all of this process, you will need a Durable Function which is already created for you in `src/processor`.
 
-Durable Function is an extension of Azure Functions that lets you write stateful functions in a serverless environment. This extension manages state, checkpoints, and restarts for you.
+[Durable Functions](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview) are an extension of Azure Functions that lets you write stateful functions in a serverless environment. This extension manages state, checkpoints, and restarts for you.
 
 ## Detect a file upload event 
 
@@ -428,7 +428,7 @@ azd deploy processor
 
 By now you should have a solution that invoke the execution of an Azure Durable Function responsible for retrieving the audio transcription thanks to a Speech to Text batch processing call. You can try to delete and upload once again the audio file in the storage `audios` container of your Storage Account. You will see the different Activity Functions be called in the Azure Functions logs.
 
-After a few minutes, you should see the transcription of the audio file in the logs of the Azure Function:
+After a few minutes, you should see the transcription of the audio file in the logs of the durable function app:
 
 For the `StartTranscription` Activity Function:
 
