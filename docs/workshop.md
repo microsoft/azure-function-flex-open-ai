@@ -85,7 +85,7 @@ Open this repository with Visual Studio Code.
 
 In this first lab you will setup the environment to make sure everything is working as expected.
 
-The Azure Developer CLI (azd) is an open-source tool that accelerates your path from a local development environment to Azure. It provides a set of developer-friendly commands that map to key stages in your workflow (code, build, deploy, monitor).
+The [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/overview) (azd) is an open-source tool that accelerates your path from a local development environment to Azure. It provides a set of developer-friendly commands that map to key stages in your workflow (code, build, deploy, monitor).
 
 In this workshop, by default, you will be provided with instructions and solutions using `azd`.
 
@@ -147,6 +147,8 @@ azd provision
 
 ## Deploy Functions to Azure
 
+In this lab, your function apps are already provisioned in Azure for you. This section will guide you in deploying the project code, the functions, to be hosted on those function apps.
+
 Refresh your azd environment using the following commands:
 
 <div class="important" data-title="Important">
@@ -174,7 +176,7 @@ AZURE_ENV_NAME="ignite"
 AZURE_LOCATION="<YOUR-RESOURCE-LOCATION>"
 ```
 
-Now you can deploy all your Function Apps using the following command:
+Now you can deploy the project code to the function apps by using the following command:
 
 ```sh
 azd deploy
@@ -182,17 +184,19 @@ azd deploy
 
 ## Application deployment with VS Code
 
-Skip this section if you have deployed the Function Apps using the [Azure Developer CLI (azd)][azd].
+Skip this section if you have deployed the project code using the [Azure Developer CLI (azd)][azd].
 
 If you encounter any issues, you can also deploy the functions manually using the [Azure Functions extension for VS Code][vscode-azure-functions-extension] in VS Code:
 
 - Open the Azure extension in VS Code left panel
 - Make sure you're signed in to your Azure account
-- Open the Function App panel
-- Right-click on your function app inside `src/uploader` and select `Deploy to Function App...`
-- Select the Function starting with `func-std-`
-- Right-click on your function app inside `src/processor` and select `Deploy to Function App...`
-- Select the Function starting with `func-drbl-`
+- Expand the Function App node
+- Right-click on the function app starting with `func-std-` and select `Deploy to Function App`
+- In the command palette, select `Browse` and navigate to the `src/uploader` directory.
+- This will deploy the `uploader` project files and code to the function app.
+- Right-click on the function app starting with `func-drbl-` and select `Deploy to Function App...`
+- In the command palette, select `Browse` and navigate to the `src/processor` directory.
+- This will deploy the `processor` project files and code to the durable function app.
 
 ![Deploy to Function App](assets/function-app-deploy.png)
 
@@ -242,11 +246,11 @@ The following sample audio files are provided in the workshop, so feel free to r
 - [Azure Functions](assets/audios/AzureFunctions.wav)
 - [Microsoft AI](assets/audios/MicrosoftAI.wav)
 
-Go back to the Storage Account and check the `audios` container. You should see the files that you uploaded with your `AudioUpload` Azure Function!
+Go back to the Storage Account and check the `audios` container. You should see the files that you uploaded with your `AudioUpload` function!
 
 ### Option 2: Upload with Postman
 
-Using [Postman][postman], first go to the Azure Function and inside the function starting with `func-std-`, select `Functions` then `AudioUpload` and select the `Get Function Url` with the `default (function key)`.
+Using [Postman][postman], first go to the function app starting with `func-std-`, select `Functions` then `AudioUpload` and select the `Get Function Url` with the `default (function key)`.
 
 ![Azure Function url credentials](assets/func-url-credentials.png)
 
@@ -261,11 +265,11 @@ Create a POST request and in the row where you set the key to `audio` for instan
 
 ![Postman](assets/func-postman.png)
 
-Go back to the Storage Account and check the `audios` container. You should see the files that you uploaded with your `AudioUpload` Azure Function!
+Go back to the Storage Account and check the `audios` container. You should see the files that you uploaded with your `AudioUpload` function!
 
 ## Managed identities and RBAC
 
-Check the App settings of the uploader function and you should notice that there are no secrets allowing it to access the blob storage.
+Check the App settings of the uploader function app and you should notice that there are no secrets allowing it to access the blob storage.
 
 ![Upload function app settings](assets/uploader-function-app-settings.png)
 
@@ -284,7 +288,7 @@ Using RBAC is a security best practice which helps you manage who has access to 
 
 - Open the [Azure Portal][az-portal]
 - Go to your resource group inside the subscription
-- Select the uploader function (the name starts with `func-std-`)
+- Select the uploader function app (the name starts with `func-std-`)
 - Under the blade menu on the left, select `Settings` then `Identity`
 - Click on `Azure role assignments`
 - Locate the role used with the resource type `Application Insights`
@@ -297,7 +301,7 @@ Using RBAC is a security best practice which helps you manage who has access to 
 
 ## Lab 1 : Summary
 
-In this Lab, you have deployed multiple Function Apps using `azd` and you have tested the uploader function by uploading an audio file to the `audios` blob storage.
+In this Lab, you have deployed multiple function apps using `azd` and you have tested the uploader function by uploading an audio file to the `audios` blob storage.
 
 All communications were secured using managed identities and RBAC.
 
