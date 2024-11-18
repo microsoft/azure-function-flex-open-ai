@@ -26,7 +26,7 @@ During this workshop you will have the instructions to complete each steps. The 
 <div class="task" data-title="Task">
 
 > - You will find the instructions and expected configurations for each Lab step in these yellow **TASK** boxes.
-> - Log into your Azure subscription locally using Azure CLI and on the [Azure Portal][az-portal] using the credentials provided to you.
+> - Log into your Azure subscription on the [Azure Portal][az-portal] using the credentials provided to you.
 > - In this version of the implementation, you will be using the [.NET 8 Isolated][in-process-vs-isolated] runtime.
 
 </div>
@@ -65,10 +65,15 @@ To retrieve the lab content :
 Open the command prompt and run the following command:
 
 ```sh
-git clone https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai.git
-```
+# Go to the Desktop
+cd Desktop
 
-Open this repository with Visual Studio Code.
+# Clone the repository
+git clone https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai.git
+
+# Open the project with Visual Studio Code
+code hands-on-lab-azure-functions-flex-openai
+```
 
 </details>
 
@@ -94,8 +99,8 @@ In this workshop, by default, you will be provided with instructions and solutio
 <div class="task" data-title="Task">
 
 > - Use the provided Azure subscription details to log into the [Azure Portal][az-portal].
-> - Log into the provided Azure subscription using Azure CLI.
-> - Log into the provided Azure subscription using Azure Developer CLI.
+> - In your command prompt, log into the provided Azure subscription using Azure CLI.
+> - In your command prompt, log into the provided Azure subscription using Azure Developer CLI.
 
 </div>
 
@@ -109,9 +114,6 @@ az login -u <username> -p <password>
 
 # Display your account details
 az account show
-
-# Select your Azure subscription
-az account set --subscription <subscription-id>
 
 # Go to the project directory
 cd <cloned-project-path>
@@ -167,7 +169,7 @@ This will create an `.azure/ignite` folder representing the state of the environ
 
 ```sh
 AZURE_SUBSCRIPTION_ID="<SUBSCRIPTION-ID>"
-RESOURCE_GROUP="rg-lab-<suffix>"
+RESOURCE_GROUP="rg-<suffix>"
 AZURE_UPLOADER_FUNCTION_APP_NAME="func-std-<suffix>"
 AZURE_PROCESSOR_FUNCTION_APP_NAME="func-drbl-<suffix>"
 AUDIOS_EVENTGRID_SYSTEM_TOPIC_NAME="evgt-<suffix>"
@@ -184,7 +186,7 @@ azd deploy
 
 ## Application deployment with VS Code
 
-Skip this section if you have deployed the project code using the [Azure Developer CLI (azd)][azd].
+**Skip this section** if you have deployed the project code using the [Azure Developer CLI (azd)][azd].
 
 If you encounter any issues, you can also deploy the functions manually using the [Azure Functions extension for VS Code][vscode-azure-functions-extension] in VS Code:
 
@@ -202,7 +204,7 @@ If you encounter any issues, you can also deploy the functions manually using th
 
 ## Test the setup
 
-To test the environment setup, we will upload an audio file using the uploader function and make sure it was uploaded to the audio's blob storage.
+To test the environment setup, you will upload an audio file using the uploader function and make sure it was uploaded to the audio's blob storage.
 
 <div class="task" data-title="Task">
 
@@ -241,7 +243,7 @@ This will send a request to the uploader function to upload an audio file to the
 A loader will appear on the Status Bar (at the bottom) to indicate that the upload is in progress.
 Wait for the request to finish then make sure the audio file was uploaded to the `audios` container which you have checked at the beginning.
 
-The following sample audio files are provided in the workshop, so feel free to retry testing the uploader function with another file by updating the `audioupload.http` file:
+The following sample audio files are provided in the workshop in the `assets`/`audios` folder, so feel free to retry testing the uploader function with another file by updating the `audioupload.http` file:
 
 - [Azure Functions](assets/audios/AzureFunctions.wav)
 - [Microsoft AI](assets/audios/MicrosoftAI.wav)
@@ -256,7 +258,7 @@ Using [Postman][postman], first go to the function app starting with `func-std-`
 
 Use this url with Postman to upload the audio file.
 
-You can use the provided sample audio files to test the function:
+You can use the provided sample audio files to test the function (they are also located in the `assets`/`audios` folder):
 
 - [Azure Functions](assets/audios/AzureFunctions.wav)
 - [Microsoft AI](assets/audios/MicrosoftAI.wav)
@@ -269,7 +271,7 @@ Go back to the Storage Account and check the `audios` container. You should see 
 
 ## Managed identities and RBAC
 
-Check the App settings of the uploader function app and you should notice that there are no secrets allowing it to access the blob storage.
+Check the App settings of the uploader function app (the one starting with `func-std`) and you should notice that there are no secrets allowing it to access the blob storage.
 
 ![Upload function app settings](assets/uploader-function-app-settings.png)
 
@@ -341,7 +343,6 @@ Now, you have the audio file uploaded in the storage account. To detect when a n
 
 - Filter to Event Types: `Blob Created`
 - A **Web Hook** event was already created for you, which is targetting the Azure Durable function to trigger the `AudioBlobUploadStart` method.
-- This event is only triggerd for `.wav` files
 
 ## Consume Speech to Text APIs
 
@@ -426,9 +427,9 @@ azd deploy processor
 
 ## Test the scenario
 
-By now you should have a solution that invoke the execution of an Azure Durable Function responsible for retrieving the audio transcription thanks to a Speech to Text batch processing call. You can try to delete and upload once again the audio file in the storage `audios` container of your Storage Account. You will see the different Activity Functions be called in the Azure Functions logs.
+By now you should have a solution that invoke the execution of an Azure Durable Function responsible for retrieving the audio transcription thanks to a Speech to Text batch processing call. You can try to upload once again an audio file in the storage `audios` container of your Storage Account with one of the previous methods you chose. You will see the different Activity Functions be called in the Azure Functions logs.
 
-After a few minutes, you should see the transcription of the audio file in the logs of the durable function app:
+After a few minutes, you should see the transcription of the audio file in the logs of the durable function app (the one started with `func-drbl-`):
 
 For the `StartTranscription` Activity Function:
 
@@ -533,7 +534,7 @@ azd deploy processor
 
 ## Test the scenario
 
-You can try to delete and upload once again the audio file in the storage `audios` container of your Storage Account. You will see the `EnrichTranscription` Activity functions be called in the function app's logs:
+You can try to upload once again the audio file in the storage `audios` container of your Storage Account. You will see the `EnrichTranscription` Activity functions be called in the function app's logs:
 
 ![Enrich Transcription activity function](assets/func-enrich-transcription.png)
 
@@ -634,7 +635,7 @@ Now, inside the **Named values** section of the APIM you should see a line which
 
 ![APIM Named Values](assets/apim-named-value-key.png)
 
-This key was created automatically by Azure, if you go in your Azure Function, inside **Functions** > **App keys** you will see an access given to the APIM instance:
+This key was created automatically by Azure, if you go in your Azure Function (`func-std-`), inside **Functions** > **App keys** you will see an access given to the APIM instance:
 
 ![Function App Key](assets/apim-azure-function-host-keys.png)
 
