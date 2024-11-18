@@ -19,7 +19,7 @@ navigation_levels: 3
 
 # Build serverless intelligent Apps with Azure Functions Flex Consumption and extension for OpenAI
 
-Welcome to this Azure Functions Workshop. You'll be experimenting with Azure Functions service in multiple labs to achieve a real world scenario. You will use the Azure Functions Flex consumption plan for all of these labs which contains the latest features of Azure Functions. Don't worry, this is a step by step lab, you will be guided through the whole process.
+Welcome to this Azure Functions Workshop. You'll be experimenting with the Azure Functions service in multiple labs to achieve a real world scenario. For all of these labs, you will use Functions' new [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan), which is now in general availability at Ignite. Don't worry, this is a step by step lab, and you will be guided through the whole process.
 
 During this workshop you will have the instructions to complete each steps. The solutions are placed under the 'Toggle solution' panel.
 
@@ -38,14 +38,14 @@ The goal of the full lab is to upload an audio file to Azure and save the transc
 
 ![Hand's On Lab Architecture](assets/architecture-overview.png)
 
-1. The first Azure Function (standard function) will be mainly responsible for uploading the audio file to the Storage Account.
+1. The first Azure Function app will be mainly responsible for uploading the audio file to the Storage Account.
 1. Whenever a blob is uploaded to the Storage Account, a `BlobCreated` event will be emitted to Event Grid
-1. The Event Grid System Topic will push the event (in real time) to trigger the Azure Durable Function
-1. The Azure Durable Function will start processing the audio file
-1. The Azure Durable Function will use the Speech To Text service for audio transcription. It will use the Monitor pattern to check every few seconds if the transcription is done.
-1. The Azure Durable Function will retrieve the transcription from the Speech to Text service
-1. The Azure Durable Function will use Azure OpenAI to generate a summary of the audio file from the transcription
-1. The Azure Durable Function will then store the transcription and its summary in Cosmos DB
+1. The Event Grid System Topic will push the event (in real time) to trigger another function app, an Azure Durable Function
+1. The durable function app will start processing the audio file
+1. The durable function app will use the Speech To Text service for audio transcription. It will use the Monitor pattern to check every few seconds if the transcription is done.
+1. The durable function app will retrieve the transcription from the Speech to Text service
+1. The durable function app will use Azure OpenAI to generate a summary of the audio file from the transcription
+1. The durable function app will then store the transcription and its summary in Cosmos DB
 
 ## Get the workshop repository
 
