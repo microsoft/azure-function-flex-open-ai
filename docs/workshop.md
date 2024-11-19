@@ -49,19 +49,6 @@ The goal of the full lab is to upload an audio file to Azure and save the transc
 
 ## Get the workshop repository
 
-To retrieve the lab content :
-
-<div class="task" data-title="Task">
-
-> - On your Desktop, [Clone][repo-clone] the repository from the **main** branch or [fork it][repo-fork] if you want to keep track of your changes if you have a GitHub account.
-> - Open the project inside Visual Studio Code
-
-</div>
-
-<details>
-
-<summary> Toggle solution</summary>
-
 Open the command prompt and run the following command:
 
 ```sh
@@ -75,14 +62,8 @@ git clone https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai.
 code hands-on-lab-azure-functions-flex-openai
 ```
 
-</details>
-
-
 [az-portal]: https://portal.azure.com
-[repo-clone]: https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai
-[repo-fork]: https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai/fork
 [in-process-vs-isolated]: https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-in-process-differences
-[az-cli]: https://learn.microsoft.com/en-us/cli/azure/
 
 ---
 
@@ -116,36 +97,13 @@ az login -u <username> -p <password>
 az account show
 
 # Go to the project directory
-cd <cloned-project-path>
+cd hands-on-lab-azure-functions-flex-openai
 
 # Authenticate using azd
 azd auth login
 ```
 
 </details>
-
-## Provision resources on Azure
-
-If you are attending an instructor-led session at Ignite, please skip this section as Azure resources have already been provisioned for you via the Skillable platform. 
-
-<div class="task" data-title="Task">
-
-> - Create a new azd environment named `ignite`
-> - Use azd to provision resources on `East US 2`
-
-</div>
-
-<details>
-
-<summary> Toggle solution</summary>
-
-```bash
-# Create resources using the IaC defined in the infra directory
-azd provision
-```
-
-</details>
-
 
 ## Deploy Functions to Azure
 
@@ -163,19 +121,6 @@ Refresh your azd environment using the following commands:
 ```sh
 azd env set AZURE_LOCATION <YOUR-RESOURCE-LOCATION> -e ignite --no-prompt
 azd env refresh -e ignite
-```
-
-This will create an `.azure/ignite` folder representing the state of the environment, and it will add a `.env` file to it with the following values:
-
-```sh
-AZURE_SUBSCRIPTION_ID="<SUBSCRIPTION-ID>"
-RESOURCE_GROUP="rg-<suffix>"
-AZURE_UPLOADER_FUNCTION_APP_NAME="func-std-<suffix>"
-AZURE_PROCESSOR_FUNCTION_APP_NAME="func-drbl-<suffix>"
-AUDIOS_EVENTGRID_SYSTEM_TOPIC_NAME="evgt-<suffix>"
-AUDIOS_STORAGE_ACCOUNT_CONTAINER_NAME="audios"
-AZURE_ENV_NAME="ignite"
-AZURE_LOCATION="<YOUR-RESOURCE-LOCATION>"
 ```
 
 Now you can deploy the project code to the function apps by using the following command:
