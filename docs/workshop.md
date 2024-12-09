@@ -107,6 +107,10 @@ azd auth login
 
 ## Deploy Functions to Azure
 
+<details>
+
+<summary>If you are in a proctored-session</summary>
+
 In this lab, your function apps are already provisioned in Azure for you. This section will guide you in deploying the project code, the functions, to be hosted on those function apps.
 
 Refresh your azd environment using the following commands:
@@ -128,6 +132,22 @@ Now you can deploy the project code to the function apps by using the following 
 ```sh
 azd deploy
 ```
+
+</details>
+
+<details>
+
+<summary>Self-guided workshop (not a proctored session)</summary>
+
+Before starting the workshop, we first need to provision resources on Azure.
+
+Please use the following command to create resources on Azure and deploy your Function Apps to them:
+
+```sh
+azd up
+```
+
+</details>
 
 ## Application deployment with VS Code
 
