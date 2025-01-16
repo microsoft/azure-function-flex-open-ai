@@ -6,7 +6,7 @@ param deploymentStorageContainerName string
 param applicationInsightsName string
 param tags object = {}
 param functionAppRuntime string = 'dotnet-isolated'
-param functionAppRuntimeVersion string = '8.0'
+param functionAppRuntimeVersion string = '9.0'
 param maximumInstanceCount int = 100
 param instanceMemoryMB int = 2048
 param appSettings array = []

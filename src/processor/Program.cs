@@ -2,7 +2,6 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
@@ -19,18 +18,6 @@ var host = new HostBuilder()
                 options.Rules.Remove(toRemove);
             }
         });
-    })
-    .ConfigureAppConfiguration((hostContext, config) =>
-    {
-        config.AddJsonFile("host.json", optional: true);
-    })
-    .ConfigureLogging((hostingContext, logging) =>
-    {
-        logging.AddApplicationInsights(console =>
-        {
-            console.IncludeScopes = true;
-        });
-        logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
     })
     .Build();
 
