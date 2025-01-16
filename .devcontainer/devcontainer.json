@@ -1,21 +1,15 @@
 {
   "name": "Functions Dev Container",
-  "image": "mcr.microsoft.com/devcontainers/dotnet:8.0-jammy",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:dev-9.0-bookworm",
   "containerUser": "vscode",
   "features": {
     //Az CLI install
-    "azure-cli": {
-      "version": "2.65"
-    },
+    "ghcr.io/devcontainers/features/azure-cli:latest": {},
     // //Azure Function Core tools + Visual Studio Extension install
-    "ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {
-      "version": "4.0.6280"
-    },
+    "ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {},
     // azd
-    "ghcr.io/azure/azure-dev/azd:latest": {
-      "version": "1.10.2"
-    }
-  },
+    "ghcr.io/azure/azure-dev/azd:latest": {}
+    },
   // Ports Forward config : 
   // 7071 : Azure Function Debug Port
   // 1000[0,1,2] : Azurite storage emulator used with Azure Function
