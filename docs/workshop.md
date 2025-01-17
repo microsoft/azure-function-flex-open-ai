@@ -27,7 +27,7 @@ During this workshop you will have the instructions to complete each steps. The 
 
 > - You will find the instructions and expected configurations for each Lab step in these yellow **TASK** boxes.
 > - Log into your Azure subscription on the [Azure Portal][az-portal] using the credentials provided to you.
-> - In this version of the implementation, you will be using the [.NET 8 Isolated][in-process-vs-isolated] runtime.
+> - In this version of the implementation, you will be using the [.NET 9 Isolated][in-process-vs-isolated] runtime.
 
 </div>
 

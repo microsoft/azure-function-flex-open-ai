@@ -1,9 +1,8 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Logging;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
@@ -20,22 +19,12 @@ var host = new HostBuilder()
                 options.Rules.Remove(toRemove);
             }
         });
-        services.AddAzureClients(clientBuilder => {
-            clientBuilder.AddBlobServiceClient(hostContext.Configuration.GetSection("AudioUploadStorage")).WithName("audioUploader");
-        });
-    })
-    .ConfigureAppConfiguration((hostContext, config) =>
-    {
-        config.AddJsonFile("host.json", optional: true);
-    })
-    .ConfigureLogging((hostingContext, logging) =>
-    {
-        logging.AddApplicationInsights(console =>
-        {
-            console.IncludeScopes = true;
-        });
-        logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-    })
+        services.AddAzureClients(
+            clientBuilder => {
+                clientBuilder.AddBlobServiceClient(hostContext.Configuration.GetSection("AudioUploadStorage")).WithName("audioUploader");
+            }
+        );
+        })
     .Build();
 
 host.Run();

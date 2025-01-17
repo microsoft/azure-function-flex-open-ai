@@ -20,7 +20,7 @@ param application string = 'hol'
   'swedencentral'
   'westus3'
 ])
-param location string = 'swedencentral'
+param location string = 'eastus2'
 
 @description('Optional. The tags to be assigned to the created resources.')
 param tags object = {
