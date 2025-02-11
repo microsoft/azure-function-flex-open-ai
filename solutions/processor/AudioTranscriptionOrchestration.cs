@@ -74,7 +74,7 @@ namespace FuncDurable
             var jobUri = await context.CallActivityAsync<string>(nameof(StartTranscription), audioFile);
             audioFile.JobUri = jobUri;
 
-            DateTime endTime = context.CurrentUtcDateTime.AddMinutes(2);
+            DateTime endTime = context.CurrentUtcDateTime.AddMinutes(5);
 
             while (context.CurrentUtcDateTime < endTime)
             {
