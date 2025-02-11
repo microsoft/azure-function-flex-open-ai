@@ -25,6 +25,7 @@ namespace FuncDurable
             );
 
             HttpResponseMessage httpResponse = await httpClient.PostAsync("/speechtotext/v3.1/transcriptions", jsonContent);
+            httpResponse.EnsureSuccessStatusCode();
             var serializedJob = await httpResponse.Content.ReadAsStringAsync();
 
             var options = new JsonSerializerOptions
@@ -44,6 +45,7 @@ namespace FuncDurable
         private static async Task<TranscriptionJob?> GetBatchTranscriptionJob(string jobUrl)
         {
             HttpResponseMessage httpResponse = await httpClient.GetAsync(jobUrl);
+            httpResponse.EnsureSuccessStatusCode();
             var serializedJob = await httpResponse.Content.ReadAsStringAsync();
 
             var options = new JsonSerializerOptions
@@ -56,9 +58,17 @@ namespace FuncDurable
         
         public static async Task<string> CheckBatchTranscriptionStatus(string jobUrl)
         {
-            var job = await GetBatchTranscriptionJob(jobUrl);
+            try
+            {
+                var job = await GetBatchTranscriptionJob(jobUrl);
 
-            return job?.Status ?? "Unknown";
+                // https://learn.microsoft.com/en-us/rest/api/speechtotext/transcriptions/get?view=rest-speechtotext-v3.2&tabs=HTTP#status
+                return job?.Status ?? "Unknown";
+            }
+            catch (Exception)
+            {
+                return "Failed";
+            }
         }
 
         public static async Task<string> GetTranscription(string jobUrl)
@@ -77,6 +87,7 @@ namespace FuncDurable
             var files = job?.Links.Files;
 
             HttpResponseMessage resultsHttpResponse = await httpClient.GetAsync(files);
+            resultsHttpResponse.EnsureSuccessStatusCode();
             var serializedJobResults = await resultsHttpResponse.Content.ReadAsStringAsync();
 
             var options = new JsonSerializerOptions
@@ -93,6 +104,7 @@ namespace FuncDurable
             }
 
             HttpResponseMessage transcriptionDetailsHttpResponse = await httpClient.GetAsync(transcriptionFileUrl);
+            transcriptionDetailsHttpResponse.EnsureSuccessStatusCode();
             var serializedTranscriptionDetails = await transcriptionDetailsHttpResponse.Content.ReadAsStringAsync();
             var transcriptionDetails = JsonSerializer.Deserialize<TranscriptionDetails>(serializedTranscriptionDetails, options);
             var transcription = transcriptionDetails?.CombinedRecognizedPhrases.First().Display;

@@ -83,7 +83,7 @@ namespace FuncDurable
 
                 if (!context.IsReplaying) { logger.LogInformation($"Status of the transcription of {audioFile.Id}: {status}"); }
 
-                if (status == "Succeeded" || status == "Failed")
+                if (status == "Succeeded")
                 {
                     // Step3: Get transcription
                     string transcription = await context.CallActivityAsync<string>(nameof(GetTranscription), audioFile);
@@ -108,6 +108,11 @@ namespace FuncDurable
 
                     if (!context.IsReplaying) { logger.LogInformation($"Finished processing of {audioFile.Id}"); }
                     
+                    break;
+                }
+                else if (status == "Failed")
+                {
+                    if (!context.IsReplaying) { logger.LogInformation($"Transcription of {audioFile.Id} failed."); }
                     break;
                 }
                 else
