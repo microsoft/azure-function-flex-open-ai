@@ -2,7 +2,7 @@
 published: true
 type: workshop
 title: Build serverless intelligent Apps with Azure Functions Flex Consumption and extension for OpenAI
-short_title: Intelligent app with Flex Consumption and Azure OpenAI
+short_title: Build intellignet Apps with Flex Consumption and Azure OpenAI
 description: In this workshop you will learn how to build an intelligent application that summarizes audio files using Azure Functions Flex Consumption and Azure OpenAI
 level: beginner # Required. Can be 'beginner', 'intermediate' or 'advanced'
 navigation_numbering: false
@@ -13,13 +13,13 @@ contacts: # Required. Must match the number of authors
   - "@damienaicheh"
   - "@ikhemissi"
 duration_minutes: 60
-tags: azure, azure functions, durable function, flex consumption, azure openai, entra id, cosmos db, csu, codespace, devcontainer, ignite
+tags: azure, azure functions, durable function, flex consumption, azure openai, entra id, cosmos db, csu, codespace, devcontainer, ignite, techconnect
 navigation_levels: 3
 ---
 
 # Build serverless intelligent Apps with Azure Functions Flex Consumption and extension for OpenAI
 
-Welcome to this Azure Functions Workshop. You'll be experimenting with the Azure Functions service in multiple labs to achieve a real world scenario. For all of these labs, you will use Functions' new [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan), which is now in general availability at Ignite. Don't worry, this is a step by step lab, and you will be guided through the whole process.
+Welcome to this Azure Functions Workshop. You'll be experimenting with the Azure Functions service in multiple labs to achieve a real world scenario. For all of these labs, you will use Functions' new [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan), which was released in general availability at Ignite 2024. Don't worry, this is a step by step lab, and you will be guided through the whole process.
 
 During this workshop you will have the instructions to complete each steps. The solutions are placed under the 'Toggle solution' panel.
 
@@ -80,6 +80,7 @@ In this workshop, by default, you will be provided with instructions and solutio
 <div class="task" data-title="Task">
 
 > - Use the provided Azure subscription details to log into the [Azure Portal][az-portal].
+> - Ensure that you are in the project directory `hands-on-lab-azure-functions-flex-openai`
 > - In your command prompt, log into the provided Azure subscription using Azure CLI.
 > - In your command prompt, log into the provided Azure subscription using Azure Developer CLI.
 
@@ -96,7 +97,7 @@ az login -u <username> -p <password>
 # Display your account details
 az account show
 
-# Go to the project directory
+# Ensure you are in the project directory
 cd hands-on-lab-azure-functions-flex-openai
 
 # Authenticate using azd
@@ -113,18 +114,20 @@ azd auth login
 
 In this lab, your function apps are already provisioned in Azure for you. This section will guide you in deploying the project code, the functions, to be hosted on those function apps.
 
+Before you do so, you'll need to refresh your azd environment so that your deployments land on the function apps provisioned for you.
+
 Refresh your azd environment using the following commands:
 
 <div class="important" data-title="Important">
 
 > - The value of the `AZURE_LOCATION` option should be set depending on where your resources are deployed.
-> - If the resources are deployed in East US you should use `eastus`, if they are deployed in East US 2 you should use `eastus2`
+> - If you are performing the lab at MCAPS Tech Connect, they are deployed in East US 2 and you should use `eastus2`
 
 </div>
 
 ```sh
-azd env set AZURE_LOCATION <YOUR-RESOURCE-LOCATION> -e ignite --no-prompt
-azd env refresh -e ignite
+azd env set AZURE_LOCATION eastus2 -e techconnect --no-prompt
+azd env refresh -e techconnect
 ```
 
 Now you can deploy the project code to the function apps by using the following command:
@@ -151,7 +154,11 @@ azd up
 
 ## Application deployment with VS Code
 
-**Skip this section** if you have deployed the project code using the [Azure Developer CLI (azd)][azd].
+<div class="important" data-title="Important">
+
+> - **Skip this section** if you have deployed the project code using the [Azure Developer CLI (azd)][azd].
+
+</div>
 
 If you encounter any issues, you can also deploy the functions manually using the [Azure Functions extension for VS Code][vscode-azure-functions-extension] in VS Code:
 
@@ -245,7 +252,7 @@ Using RBAC is a security best practice which helps you manage who has access to 
 
 <div class="task" data-title="Task">
 
-> - Which role is being used by the uploader function to publish telemetry data to Application Insights ?
+> - Which role is being used by the uploader function to publish telemetry data to Application Insights?
 
 </div>
 
@@ -515,9 +522,9 @@ By now you should have a solution that invokes Azure OpenAI to create a summary 
 
 Congratulations!
 
-Well done on completing the lab at Ignite! Your dedication and hard work have truly paid off. Keep up the great work!
+Well done on completing the lab at Tech Connect! Your dedication and hard work have truly paid off. Keep up the great work!
 
-Continue on for a bonus lab to integrate your functions with Azure API Management. If not, visit us at the Serverless booth to learn more about the technologies you tried out today:
+Continue on for a bonus lab to integrate your functions with Azure API Management. If not, connect with the product group to learn more about the technologies you tried out today:
 
 - Azure Functions Flex Consumption plan
 - Azure Durable Functions
@@ -525,7 +532,7 @@ Continue on for a bonus lab to integrate your functions with Azure API Managemen
 - Azure AI Speech to text
 - Azure Functions' triggers and bindings
 
-![](assets/congrats.jpeg)
+![](assets/congrats-techconnect.jpeg)
 
 ---
 
@@ -674,7 +681,7 @@ If you want to see more scenarios regarding APIs and Azure Open AI you can look 
 
 # Closing the workshop
 
-If you are attending an instructor-led session at Ignite, please:
+**If you are attending an instructor-led session at Tech Connect, please:**
 
 <div class="task" data-title="Task">
 
@@ -682,7 +689,7 @@ If you are attending an instructor-led session at Ignite, please:
 
 </div>
 
-If you are doing it outside an instructor-led session at Ignite:
+**If you are doing it outside an instructor-led session at Tech Connect:**
 
 Once you're done with this lab you can delete the resource group you created at the beginning.
 
