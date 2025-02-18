@@ -2,7 +2,7 @@
 published: true
 type: workshop
 title: Build serverless intelligent Apps with Azure Functions Flex Consumption and extension for OpenAI
-short_title: Build intellignet Apps with Flex Consumption and Azure OpenAI
+short_title: Build intelligent Apps with Flex Consumption and Azure OpenAI
 description: In this workshop you will learn how to build an intelligent application that summarizes audio files using Azure Functions Flex Consumption and Azure OpenAI
 level: beginner # Required. Can be 'beginner', 'intermediate' or 'advanced'
 navigation_numbering: false
@@ -351,11 +351,8 @@ Update the `StartTranscription` method with this content:
 ```csharp
 ILogger logger = executionContext.GetLogger(nameof(StartTranscription));
 logger.LogInformation($"Starting transcription of {audioFile.Id}");
-
 var jobUri = await SpeechToTextService.CreateBatchTranscription(audioFile.UrlWithSasToken, audioFile.Id);
-
 logger.LogInformation($"Job uri for {audioFile.Id}: {jobUri}");
-
 return jobUri;
 ```
 
